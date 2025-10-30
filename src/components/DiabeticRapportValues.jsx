@@ -1,7 +1,10 @@
+/**
+ * DiabeticRapportValues.jsx - Displays a summary of diabetic values and metrics.
+ */
 import React from "react";
 import PropTypes from "prop-types";
+import "./DiabeticRapportValues.css";
 
-// ====== Helpers ======
 const DEFAULT_TARGETS = {
   tirInRangeMinPct: 70,
   cvMaxPct: 36,
@@ -10,30 +13,47 @@ const DEFAULT_TARGETS = {
   fpgMax: 7,
 };
 
+/**
+ * @function mgdlToMmol
+ * @summary Converts mg/dL to mmol/L.
+ */
 function mgdlToMmol(x) {
   return x / 18;
 }
 
-// DCCT-formule: eAG(mg/dL) ≈ 28.7 × HbA1c(%) − 46.7
+/**
+ * @function calcEagFromHbA1cPercent
+ * @summary Calculates eAG from HbA1c percentage.
+ */
 function calcEagFromHbA1cPercent(hba1cPercent) {
   const eAGmgdl = 28.7 * hba1cPercent - 46.7;
   const eAGmmol = mgdlToMmol(eAGmgdl);
-  // Round mmol value to 1 decimal place
   return { mgdl: round(eAGmgdl, 0), mmol: round(eAGmmol, 1) };
 }
 
-// GMI-formule: GMI(%) ≈ 3.31 + 0.02392 × Gemiddelde Glucose (in mg/dL)
+/**
+ * @function calcGmiFromAvgGlucose
+ * @summary Calculates GMI from average glucose in mg/dL.
+ */
 function calcGmiFromAvgGlucose(avgGlucoseMgdl) {
     if (avgGlucoseMgdl == null) return null;
     const gmi = 3.31 + (0.02392 * avgGlucoseMgdl);
     return round(gmi, 1);
 }
 
+/**
+ * @function round
+ * @summary Rounds a number to a specified decimal place.
+ */
 function round(num, dp = 1) {
   const f = Math.pow(10, dp);
   return (Math.round(num * f) / f).toFixed(dp);
 }
 
+/**
+ * @function statusBadge
+ * @summary Renders a status badge with a given kind and label.
+ */
 function statusBadge(
   kind,
   label
@@ -49,6 +69,10 @@ function statusBadge(
   );
 }
 
+/**
+ * @function sectionVisible
+ * @summary Checks if a section should be visible.
+ */
 function sectionVisible(
   key,
   show
@@ -56,10 +80,16 @@ function sectionVisible(
   return !show || show.includes(key);
 }
 
-// Placeholder for empty values
+/**
+ * @function EmptyValue
+ * @summary Placeholder component for empty data values.
+ */
 const EmptyValue = () => <div className="dr-tile__sub">Geen gegevens</div>;
 
-// ====== Component ======
+/**
+ * @function DiabeticRapportValues
+ * @summary Main component to display various diabetic health metrics.
+ */
 const DiabeticRapportValues = ({
   title = "Diabetessamenvatting",
   data,
@@ -75,7 +105,6 @@ const DiabeticRapportValues = ({
     if (onTileClick) onTileClick(section);
   };
 
-  // Helpers voor status
   const tirStatus = (tir) => {
     if (!tir) return null;
     const inRange = tir.inRangePct;
@@ -104,7 +133,6 @@ const DiabeticRapportValues = ({
     return statusBadge("ok", "Binnen doel");
   };
 
-  // Normaliseer PPG/FPG naar mmol/L voor drempelvergelijking
   const fpgMmol =
     data.fpg?.value != null
       ? data.fpg.unit === "mg/dL"
@@ -119,13 +147,11 @@ const DiabeticRapportValues = ({
         : data.ppg.value
       : undefined;
 
-  // eAG vanuit HbA1c% (indien % aangeleverd)
   const eAG =
     data.hbA1c?.unit === "%" && data.hbA1c.value != null
       ? calcEagFromHbA1cPercent(data.hbA1c.value)
       : null;
 
-  // GMI berekening
   const avgGlucose90d = data.avgGlucose?.values['90d'];
   const avgGlucose90dMgdl = data.avgGlucose?.unit === 'mmol/L' && avgGlucose90d != null ? avgGlucose90d * 18 : avgGlucose90d;
   const gmi = calcGmiFromAvgGlucose(avgGlucose90dMgdl);
@@ -147,7 +173,6 @@ const DiabeticRapportValues = ({
       </header>
 
       <div className="dr-grid">
-        {/* HbA1c */}
         {sectionVisible("hbA1c", showSections) && (
           <button
             type="button"
@@ -176,7 +201,6 @@ const DiabeticRapportValues = ({
           </button>
         )}
 
-        {/* GMI */}
         {sectionVisible("gmi", showSections) && (
             <button
                 type="button"
@@ -199,7 +223,6 @@ const DiabeticRapportValues = ({
             </button>
         )}
 
-        {/* Gemiddelde glucose */}
         {sectionVisible("avgGlucose", showSections) && (
           <button
             type="button"
@@ -220,7 +243,6 @@ const DiabeticRapportValues = ({
                     <div key={k} className="dr-avglist__row" role="listitem">
                       <span className="dr-avglist__key">{k}</span>
                       <span className="dr-avglist__value">
-                        {/* Round to 1 decimal place */}
                         {round(data.avgGlucose.values[k], 1)} {data.avgGlucose.unit}
                       </span>
                     </div>
@@ -231,7 +253,6 @@ const DiabeticRapportValues = ({
           </button>
         )}
 
-        {/* Time in Range */}
         {sectionVisible("timeInRange", showSections) && (
           <button
             type="button"
@@ -264,7 +285,6 @@ const DiabeticRapportValues = ({
           </button>
         )}
 
-        {/* CV */}
         {sectionVisible("cvPct", showSections) && (
           <button
             type="button"
@@ -288,7 +308,6 @@ const DiabeticRapportValues = ({
           </button>
         )}
 
-        {/* FPG */}
         {sectionVisible("fpg", showSections) && (
           <button
             type="button"
@@ -320,7 +339,6 @@ const DiabeticRapportValues = ({
           </button>
         )}
 
-        {/* PPG */}
         {sectionVisible("ppg", showSections) && (
           <button
             type="button"
@@ -330,7 +348,7 @@ const DiabeticRapportValues = ({
           >
             <div className="dr-tile__head">
                 <div className="dr-tile__title-container">
-                    <svg className="dr-tile__icon" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 15.546c-.523 0-1.046.151-1.5.454a2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.701 2.701 0 00-1.5-.454M9 6v2m3-2v2m3-2v2M3 20a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v14z" /></svg>
+                    <svg className="dr-tile__icon" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 15.546c-.523 0-1.046.151-1.5.454a2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.701 2.701 0 00-1.5-.454M9 6v2m3-2v2m3-2v2M3 20a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v14z" /></svg>
                     <span className="dr-tile__title">Na maaltijd (PPG)</span>
                 </div>
               {ppgMmol != null && (
@@ -352,7 +370,6 @@ const DiabeticRapportValues = ({
           </button>
         )}
 
-        {/* Ketonen */}
         {sectionVisible("ketones", showSections) && (
           <button
             type="button"
@@ -374,7 +391,6 @@ const DiabeticRapportValues = ({
           </button>
         )}
 
-        {/* Lifestyle */}
         {sectionVisible("lifestyle", showSections) && (
           <button
             type="button"
@@ -410,7 +426,6 @@ const DiabeticRapportValues = ({
           </button>
         )}
 
-        {/* Vitals */}
         {sectionVisible("vitals", showSections) && (
           <button
             type="button"
@@ -438,7 +453,6 @@ const DiabeticRapportValues = ({
         )}
       </div>
 
-      {/* Voetnoot / definities */}
       <footer className="dr-card__footer">
         <p className="dr-footnote">
           TIR = Time in Range (3.9–10 mmol/L). CV &le; {DEFAULT_TARGETS.cvMaxPct}% = stabielere glucose.
@@ -505,3 +519,4 @@ DiabeticRapportValues.propTypes = {
 };
 
 export default DiabeticRapportValues;
+

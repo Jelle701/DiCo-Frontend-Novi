@@ -1,10 +1,13 @@
+/**
+ * ProviderService.jsx - Provides API services for provider-related operations, including patient linking and data retrieval.
+ */
 import apiClient from './ApiClient.jsx';
 import { handleApiError } from './ApiErrorHandler.jsx';
 
 /**
- * Links a patient to the currently logged-in provider or guardian using an access code.
- * Corresponds to: POST /api/provider/link-patient
- * @param {string} accessCode The patient's unique access code.
+ * @function linkPatient
+ * @summary Links a patient to the currently logged-in provider or guardian using an access code.
+ * @param {string} accessCode - The patient's unique access code.
  * @returns {Promise<{data: object|null, error: object|null}>}
  */
 export const linkPatient = async (accessCode) => {
@@ -17,8 +20,8 @@ export const linkPatient = async (accessCode) => {
 };
 
 /**
- * Fetches all patients linked to the currently logged-in provider or guardian.
- * Corresponds to: GET /api/provider/patients
+ * @function getLinkedPatients
+ * @summary Fetches all patients linked to the currently logged-in provider or guardian.
  * @returns {Promise<{data: any, error: any}>}
  */
 export const getLinkedPatients = async () => {
@@ -31,9 +34,9 @@ export const getLinkedPatients = async () => {
 };
 
 /**
- * Fetches glucose measurements for a specific patient.
- * Corresponds to: GET /api/provider/patients/{patientId}/glucose-measurements
- * @param {number} patientId The ID of the patient.
+ * @function getPatientGlucoseMeasurements
+ * @summary Fetches glucose measurements for a specific patient.
+ * @param {number} patientId - The ID of the patient.
  * @returns {Promise<{data: any, error: any}>}
  */
 export const getPatientGlucoseMeasurements = async (patientId) => {
@@ -46,9 +49,9 @@ export const getPatientGlucoseMeasurements = async (patientId) => {
 };
 
 /**
- * Fetches the diabetes summary for a specific patient.
- * Corresponds to: GET /api/provider/patients/{patientId}/diabetes-summary
- * @param {number} patientId The ID of the patient.
+ * @function getPatientDiabetesSummary
+ * @summary Fetches the diabetes summary for a specific patient.
+ * @param {number} patientId - The ID of the patient.
  * @returns {Promise<{data: any, error: any}>}
  */
 export const getPatientDiabetesSummary = async (patientId) => {
@@ -61,8 +64,9 @@ export const getPatientDiabetesSummary = async (patientId) => {
 };
 
 /**
- * Requests a temporary, delegated token for a specific patient.
- * @param {number} patientId The ID of the patient.
+ * @function getDelegateTokenForPatient
+ * @summary Requests a temporary, delegated token for a specific patient.
+ * @param {number} patientId - The ID of the patient.
  * @returns {Promise<{data: {delegatedToken: string}|null, error: object|null}>}
  */
 export const getDelegateTokenForPatient = async (patientId) => {
@@ -75,8 +79,8 @@ export const getDelegateTokenForPatient = async (patientId) => {
 };
 
 /**
- * Fetches summary data for the provider dashboard.
- * Corresponds to: GET /api/provider/summary
+ * @function getProviderDashboardSummary
+ * @summary Fetches summary data for the provider dashboard.
  * @returns {Promise<{data: object|null, error: object|null}>}
  */
 export const getProviderDashboardSummary = async () => {

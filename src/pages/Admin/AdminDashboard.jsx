@@ -1,3 +1,6 @@
+/**
+ * AdminDashboard.jsx - Provides an administrative interface for user management and analytics.
+ */
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
 import { getAllUsers, deleteUserById, updateUserById } from '../../services/AdminService.jsx';
@@ -10,13 +13,19 @@ import ActivityFeed from './ActivityFeed';
 import TableSkeleton from './TableSkeleton';
 import './AdminDashboard.css';
 
-// --- Helper Functions ---
+/**
+ * @function getRoleBadgeClass
+ * @summary Returns the CSS class for a role badge based on the role name.
+ */
 const getRoleBadgeClass = (role) => {
     const roleName = (role || 'default').toLowerCase();
     return `user-role-badge badge-${roleName}`;
 };
 
-// --- Child Component: Dashboard Tab ---
+/**
+ * @function DashboardTab
+ * @summary Displays overall user statistics and includes analytics charts and activity feed.
+ */
 const DashboardTab = ({ users }) => {
     const stats = useMemo(() => ({
         total: users.length,
@@ -53,7 +62,10 @@ const DashboardTab = ({ users }) => {
     );
 };
 
-// --- Child Component: User Management Tab ---
+/**
+ * @function UserManagementTab
+ * @summary Manages user data, including search, filter, sort, bulk actions, and pagination.
+ */
 const UserManagementTab = ({ users, loading, error, fetchUsers, setNotification }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [roleFilter, setRoleFilter] = useState('ALL');
@@ -161,12 +173,12 @@ const UserManagementTab = ({ users, loading, error, fetchUsers, setNotification 
             <div className="card">
                 {loading ? <TableSkeleton /> : error ? <p className="form-error">{error}</p> : (
                     currentUsers.length > 0 ? (
-                        <>
+                        <> 
                             <div className="table-container">
                                 <table className="table">
                                     <thead>
                                         <tr>
-                                            <th style={{ width: '50px' }}><input type="checkbox" onChange={handleSelectAll} checked={selectedUsers.length > 0 && selectedUsers.length === currentUsers.length} /></th>
+                                            <th className="admin-table-checkbox-col"><input type="checkbox" onChange={handleSelectAll} checked={selectedUsers.length > 0 && selectedUsers.length === currentUsers.length} /></th>
                                             <th onClick={() => requestSort('id')} className={`sortable ${sortConfig.key === 'id' ? sortConfig.direction : ''}`}>ID</th>
                                             <th onClick={() => requestSort('email')} className={`sortable ${sortConfig.key === 'email' ? sortConfig.direction : ''}`}>Email</th>
                                             <th onClick={() => requestSort('lastName')} className={`sortable ${sortConfig.key === 'lastName' ? sortConfig.direction : ''}`}>Naam</th>
@@ -193,6 +205,10 @@ const UserManagementTab = ({ users, loading, error, fetchUsers, setNotification 
     );
 };
 
+/**
+ * @function UserTableRow
+ * @summary Renders a single row in the user management table with actions.
+ */
 const UserTableRow = ({ user, selectedUsers, onSelectUser, fetchUsers, setNotification }) => {
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
@@ -237,6 +253,10 @@ const UserTableRow = ({ user, selectedUsers, onSelectUser, fetchUsers, setNotifi
     );
 };
 
+/**
+ * @function Pagination
+ * @summary Renders pagination controls for a table.
+ */
 const Pagination = ({ usersPerPage, totalUsers, paginate, currentPage }) => {
     const pageNumbers = [];
     for (let i = 1; i <= Math.ceil(totalUsers / usersPerPage); i++) pageNumbers.push(i);
@@ -254,7 +274,10 @@ const Pagination = ({ usersPerPage, totalUsers, paginate, currentPage }) => {
     );
 };
 
-// --- Main AdminDashboard Component ---
+/**
+ * @function AdminDashboard
+ * @summary Main component for the Admin Dashboard, displaying user analytics and management.
+ */
 const AdminDashboard = () => {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);

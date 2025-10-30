@@ -1,18 +1,24 @@
+/**
+ * HomePage.jsx - The main landing page of the application.
+ */
 import React from 'react';
 import { Link } from "react-router-dom";
 import Navbar from '../../components/web components/Navbar.jsx';
 import './HomePage.css';
 
-// Importeer je afbeeldingen en video's hier
 import heroVideo from '../../content/HomepageVideo.mp4';
-import manWithSensor from '../../content/Man met sensor.png'; // Voorbeeld afbeelding
-import graphImage from '../../content/Grafiek.png'; // Voorbeeld afbeelding
+import manWithSensor from '../../content/Man met sensor.png';
+import graphImage from '../../content/Grafiek.png';
 import fatimaImage from '../../content/fatima.png';
 import marcoImage from '../../content/marco.png';
 import sophieImage from '../../content/sophie.png';
-import appImage from '../../content/App.png'; // Correcte afbeelding
+import appImage from '../../content/App.png';
 
-function HomePage() {
+/**
+ * @function HomePage
+ * @summary Renders the marketing and informational landing page for DiCo.
+ */
+const HomePage = () => {
     return (
         <div className="homepage">
             <div className="top-banner">
@@ -63,7 +69,6 @@ function HomePage() {
                         <ul>
                             <li>Aanpasbare medicatieschema's.</li>
                             <li>Dosis-tracking en rapportage.</li>
-                            <li>Integratie met maaltijdplanning.</li>
                         </ul>
                     </div>
                     <div className="feature-image-wrapper">
@@ -82,7 +87,7 @@ function HomePage() {
                         </ul>
                     </div>
                     <div className="feature-image-wrapper">
-                        <img className="feature-img" src={appImage} alt="DiCo app op telefoon" /> {/* AANGEPAST */}
+                        <img className="feature-img" src={appImage} alt="DiCo app op telefoon" />
                     </div>
                 </div>
             </section>
@@ -107,35 +112,6 @@ function HomePage() {
                     </div>
                 </div>
             </section>
-
-            {/*<section className="how-it-works-section section">*/}
-            {/*    <div className="container text-center">*/}
-            {/*        <h2>Hoe DICO werkt</h2>*/}
-            {/*        <p className="auth-form-description">Begin in slechts een paar eenvoudige stappen met het optimaliseren van je gezondheid.</p>*/}
-            {/*        <div className="how-it-works-grid d-flex gap-6 flex-wrap justify-center mt-6">*/}
-            {/*            <div className="how-it-works-step card">*/}
-            {/*                <div className="step-number numeric">1</div>*/}
-            {/*                <h3>Registreer</h3>*/}
-            {/*                <p className="small text-300">Maak snel en eenvoudig je persoonlijke DICO-account aan.</p>*/}
-            {/*            </div>*/}
-            {/*            <div className="how-it-works-step card">*/}
-            {/*                <div className="step-number numeric">2</div>*/}
-            {/*                <h3>Koppel</h3>*/}
-            {/*                <p className="small text-300">Verbind je glucosemeters en andere hulpmiddelen.</p>*/}
-            {/*            </div>*/}
-            {/*            <div className="how-it-works-step card">*/}
-            {/*                <div className="step-number numeric">3</div>*/}
-            {/*                <h3>Inzicht</h3>*/}
-            {/*                <p className="small text-300">Begin met tracken en ontvang gepersonaliseerde inzichten.</p>*/}
-            {/*            </div>*/}
-            {/*            <div className="how-it-works-step card">*/}
-            {/*                <div className="step-number numeric">4</div>*/}
-            {/*                <h3>Optimaliseer</h3>*/}
-            {/*                <p className="small text-300">Gebruik de aanbevelingen om je gezondheid te verbeteren.</p>*/}
-            {/*            </div>*/}
-            {/*        </div>*/}
-            {/*    </div>*/}
-            {/*</section>*/}
 
             <section className="testimonials-section section">
                 <div className="container">
@@ -182,6 +158,6 @@ function HomePage() {
             </footer>
         </div>
     );
-}
+};
 
 export default HomePage;

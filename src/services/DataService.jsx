@@ -1,11 +1,14 @@
-
+/**
+ * DataService.jsx - Provides API services for glucose data management.
+ */
 import apiClient from './ApiClient';
 import { handleApiError } from './ApiErrorHandler';
 
 /**
- * Uploadt een CSV-bestand met glucosegegevens.
- * @param {File} file - Het CSV-bestand dat moet worden geüpload.
- * @param {function} onUploadProgress - Callback-functie om de voortgang van het uploaden bij te houden.
+ * @function uploadGlucoseData
+ * @summary Uploads a CSV file containing glucose data.
+ * @param {File} file - The CSV file to upload.
+ * @param {function} onUploadProgress - Callback for upload progress tracking.
  * @returns {Promise<{data: object|null, error: object|null}>}
  */
 export async function uploadGlucoseData(file, onUploadProgress) {
@@ -27,7 +30,8 @@ export async function uploadGlucoseData(file, onUploadProgress) {
 }
 
 /**
- * Haalt de recente glucosegegevens voor de ingelogde gebruiker op.
+ * @function getMyGlucoseData
+ * @summary Fetches recent glucose data for the logged-in user.
  * @returns {Promise<{data: object|null, error: object|null}>}
  */
 export async function getMyGlucoseData() {
@@ -40,7 +44,8 @@ export async function getMyGlucoseData() {
 }
 
 /**
- * Haalt ALLE glucosegegevens voor de ingelogde gebruiker op voor export.
+ * @function getAllMyGlucoseData
+ * @summary Fetches all glucose data for the logged-in user, typically for export.
  * @returns {Promise<{data: object|null, error: object|null}>}
  */
 export async function getAllMyGlucoseData() {

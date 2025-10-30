@@ -1,17 +1,24 @@
+/**
+ * ApiClient.jsx - Configures and provides an Axios instance for making API requests.
+ */
 import axios from 'axios';
-// import { API_URL } from '../../config.js'; // Deze import is nu niet meer direct nodig voor baseURL
 
+/**
+ * @constant apiClient
+ * @summary Configured Axios instance with base URL, headers, and interceptors for request and response handling.
+ */
 const apiClient = axios.create({
-    baseURL: '/api', // Aangepast volgens instructies: alle API-aanroepen krijgen nu /api als prefix
+    baseURL: '/api',
     headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
     },
     withCredentials: true,
 });
+
 /**
- * Request Interceptor:
- * Deze functie wordt uitgevoerd VOOR elke uitgaande request.
+ * Request Interceptor
+ * @summary Adds authorization headers to outgoing requests.
  */
 apiClient.interceptors.request.use(
     (config) => {
@@ -34,8 +41,8 @@ apiClient.interceptors.request.use(
 );
 
 /**
- * Response Interceptor:
- * Deze functie wordt uitgevoerd NA elke inkomende response.
+ * Response Interceptor
+ * @summary Logs API responses and handles errors.
  */
 apiClient.interceptors.response.use(
     (response) => {

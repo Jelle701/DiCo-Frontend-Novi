@@ -1,11 +1,16 @@
+/**
+ * LinkPatientPage.jsx - Allows a guardian to link their account to a patient using an access code.
+ */
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-// Update to the new centralized ProviderService
-import { linkPatient } from '../../services/ProviderService.jsx'; 
-import './GrantAccessPage.css'; // We hergebruiken de styling
+import { linkPatient } from '../../services/ProviderService.jsx';
+import './GrantAccessPage.css';
 
-// Deze pagina is voor een ingelogde Ouder/Voogd om hun account te koppelen aan een patiënt.
-function LinkPatientPage() {
+/**
+ * @function LinkPatientPage
+ * @summary Component for guardians to link to a patient's account.
+ */
+const LinkPatientPage = () => {
     const [code, setCode] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
@@ -23,15 +28,12 @@ function LinkPatientPage() {
         }
 
         try {
-            // Use the new, correct service function
             const { data, error: apiError } = await linkPatient(code);
 
             if (apiError) {
                 throw apiError;
             }
 
-            // Na een succesvolle koppeling, stuur de ouder naar het dashboard.
-            // De backend weet nu dat deze ouder toegang heeft tot de data van de patiënt.
             navigate('/dashboard');
 
         } catch (err) {
@@ -67,6 +69,6 @@ function LinkPatientPage() {
             </form>
         </div>
     );
-}
+};
 
 export default LinkPatientPage;

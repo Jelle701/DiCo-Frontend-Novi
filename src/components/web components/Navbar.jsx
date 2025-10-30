@@ -1,10 +1,17 @@
+/**
+ * Navbar.jsx - Responsive navigation bar for the application.
+ */
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth, useUser } from '../../contexts/AuthContext.jsx';
 import DicoLogo from '../../content/DiCo_logo.svg';
 import './NavBar.css';
 
-function Navbar() {
+/**
+ * @function Navbar
+ * @summary Renders the main navigation bar with dynamic links based on user authentication and role.
+ */
+const Navbar = () => {
     const { isAuth, logout } = useAuth();
     const { user } = useUser();
     const navigate = useNavigate();
@@ -59,7 +66,6 @@ function Navbar() {
             <div className="navbar-container d-flex justify-between items-center">
                 <NavLink to={isAuth ? dashboardPath : "/"} className="navbar-logo" onClick={closeMenu}>
                     <img src={DicoLogo} alt="App Logo" />
-
                 </NavLink>
 
                 <button
@@ -143,6 +149,6 @@ function Navbar() {
             </div>
         </nav>
     );
-}
+};
 
 export default Navbar;

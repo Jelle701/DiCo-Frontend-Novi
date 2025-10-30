@@ -1,11 +1,13 @@
+/**
+ * GuardianPortal.jsx - Guardian portal for viewing and linking patient data.
+ */
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getLinkedPatients, linkPatient } from '../../services/ProviderService.jsx';
 import Navbar from '../../components/web components/Navbar.jsx';
-import ConfirmationModal from '../../components/web components/ConfirmationModal.jsx'; // Voor de modal
-// import './GuardianPortal.css'; // Niet langer nodig
+import ConfirmationModal from '../../components/web components/ConfirmationModal.jsx';
 
-// --- Helper Functions ---
+// Calculates age from a date of birth string.
 const calculateAge = (dobString) => {
     if (!dobString) return 'N/A';
     const birthDate = new Date(dobString);
@@ -15,8 +17,6 @@ const calculateAge = (dobString) => {
     if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) age--;
     return age;
 };
-
-// --- Child Components ---
 
 const PatientCard = ({ patient }) => {
     const navigate = useNavigate();
@@ -75,9 +75,7 @@ const LinkPatientModal = ({ isOpen, onClose, onSubmit, accessCode, setAccessCode
     );
 };
 
-// --- Main Component ---
-
-function GuardianPortal() {
+const GuardianPortal = () => {
     const [linkedPatients, setLinkedPatients] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
@@ -146,7 +144,7 @@ function GuardianPortal() {
                 )}
             </div>
 
-            <LinkPatientModal 
+            <LinkPatientModal
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
                 onSubmit={handleLinkSubmit}
@@ -157,6 +155,6 @@ function GuardianPortal() {
             />
         </>
     );
-}
+};
 
 export default GuardianPortal;

@@ -1,10 +1,17 @@
+/**
+ * OnboardingPreferences.jsx - Onboarding step for users to provide personal and physical information.
+ */
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useOnboarding } from '../../../contexts/OnboardingContext';
 import Navbar from '../../../components/web components/Navbar.jsx';
-import '../../../styles/AuthForm.css'; // Importeer de nieuwe centrale stylesheet
+import '../../../styles/AuthForm.css';
 
-function OnboardingPreferences() {
+/**
+ * @function OnboardingPreferences
+ * @summary Allows users to input their personal details, such as name, date of birth, gender, weight, and height.
+ */
+const OnboardingPreferences = () => {
     const navigate = useNavigate();
     const { onboardingData, updateOnboardingData } = useOnboarding();
     const [formData, setFormData] = useState({
@@ -72,11 +79,11 @@ function OnboardingPreferences() {
     return (
         <>
             <Navbar />
-            <div className="auth-page-container"> {/* Gebruik de nieuwe container class */}
-                <div className="auth-form-card"> {/* Gebruik de nieuwe formulier card class */}
+            <div className="auth-page-container">
+                <div className="auth-form-card">
                     <form onSubmit={handleSubmit}>
                         <h1>Persoonlijke Gegevens</h1>
-                        <p className="auth-form-description">Deze gegevens helpen ons om de informatie beter op uw situatie af te stemmen.</p> {/* Gebruik de nieuwe description class */}
+                        <p className="auth-form-description">Deze gegevens helpen ons om de informatie beter op uw situatie af te stemmen.</p>
 
                         <div className="input-group">
                             <label htmlFor="firstName">Voornaam</label>
@@ -120,6 +127,6 @@ function OnboardingPreferences() {
             </div>
         </>
     );
-}
+};
 
 export default OnboardingPreferences;

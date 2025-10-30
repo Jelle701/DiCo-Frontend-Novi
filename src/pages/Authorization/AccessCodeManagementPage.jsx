@@ -1,52 +1,60 @@
+/**
+ * AccessCodeManagementPage.jsx - Manages the generation and display of patient access codes.
+ */
 import React, { useState, useEffect } from 'react';
-import apiClient from '../../services/ApiClient'; // Import the central client
+import apiClient from '../../services/ApiClient';
 import './AccessCodeManagementPage.css';
 
+/**
+ * @function AccessCodeManagementPage
+ * @summary Allows patients to generate and view a unique access code for sharing their data.
+ */
 const AccessCodeManagementPage = () => {
     const [accessCode, setAccessCode] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [copySuccess, setCopySuccess] = useState('');
 
+    /**
+     * @function fetchAccessCode
+     * @summary Fetches the existing access code for the current user.
+     */
     const fetchAccessCode = async () => {
-        console.log('fetchAccessCode: Start');
         setLoading(true);
         setError('');
         try {
-            // CORRECTIE: De overbodige /api is hier verwijderd.
             const response = await apiClient.get('/patient/access-code');
-            console.log('fetchAccessCode: Success', response);
             setAccessCode(response.data.accessCode);
         } catch (err) {
-            console.error('fetchAccessCode: Error', err);
-            // Don't show an error if the code just doesn't exist yet (404)
             if (err.response && err.response.status !== 404) {
                 setError('Fout bij het ophalen van de toegangscode.');
             }
         } finally {
-            console.log('fetchAccessCode: Finally');
             setLoading(false);
         }
     };
 
+    /**
+     * @function generateAccessCode
+     * @summary Generates a new access code for the current user.
+     */
     const generateAccessCode = async () => {
-        console.log('generateAccessCode: Start');
         setLoading(true);
         setError('');
         try {
-            // CORRECTIE: De overbodige /api is hier verwijderd.
             const response = await apiClient.post('/patient/access-code/generate');
-            console.log('generateAccessCode: Success', response);
             setAccessCode(response.data.accessCode);
         } catch (err) {
-            console.error('generateAccessCode: Error', err);
             setError('Fout bij het genereren van de code. Probeer het later opnieuw.');
         } finally {
-            console.log('generateAccessCode: Finally');
             setLoading(false);
         }
     };
 
+    /**
+     * @function copyToClipboard
+     * @summary Copies the displayed access code to the clipboard.
+     */
     const copyToClipboard = () => {
         if (accessCode) {
             navigator.clipboard.writeText(accessCode).then(() => {

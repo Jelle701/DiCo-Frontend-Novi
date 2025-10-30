@@ -1,6 +1,14 @@
+/**
+ * AnalyticsCharts.jsx - Displays charts for user registration analytics.
+ */
 import React, { useMemo } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import './AdminDashboard.css'; // Import the CSS file for styling
 
+/**
+ * @function AnalyticsCharts
+ * @summary Renders a bar chart showing user registrations per month.
+ */
 const AnalyticsCharts = ({ users }) => {
 
     const chartData = useMemo(() => {
@@ -10,13 +18,11 @@ const AnalyticsCharts = ({ users }) => {
 
         const counts = users.reduce((acc, user) => {
             const date = new Date(user.createdAt);
-            // Using short month name for better fit on X-axis
             const monthKey = date.toLocaleDateString('nl-NL', { month: 'short', year: 'numeric' });
             acc[monthKey] = (acc[monthKey] || 0) + 1;
             return acc;
         }, {});
 
-        // Re-create month order to match 'short' format from toLocaleDateString
         const monthOrder = ['jan.', 'feb.', 'mrt.', 'apr.', 'mei', 'jun.', 'jul.', 'aug.', 'sep.', 'okt.', 'nov.', 'dec.'];
         
         const sortedKeys = Object.keys(counts).sort((a, b) => {
@@ -29,7 +35,7 @@ const AnalyticsCharts = ({ users }) => {
         });
 
         return sortedKeys.map(key => ({
-            name: key.replace('.', ''), // Clean up for display
+            name: key.replace('.', ''),
             Registraties: counts[key],
         }));
     }, [users]);
@@ -38,7 +44,7 @@ const AnalyticsCharts = ({ users }) => {
         <div className="card">
             <h4 className="card-title mt-0 mb-4">Gebruikersregistraties per Maand</h4>
             {chartData.length > 0 ? (
-                <div style={{ width: '100%', height: 300 }}>
+                <div className="analytics-chart-container">
                     <ResponsiveContainer>
                         <BarChart data={chartData} margin={{ top: 5, right: 20, left: -10, bottom: 5 }}>
                             <CartesianGrid strokeDasharray="3 3" stroke="rgba(255, 255, 255, 0.1)" />
@@ -58,7 +64,7 @@ const AnalyticsCharts = ({ users }) => {
                     </ResponsiveContainer>
                 </div>
             ) : (
-                <div className="d-flex flex-column items-center justify-center bg-800 rounded-md text-400 p-6" style={{ minHeight: '150px' }}>
+                <div className="d-flex flex-column items-center justify-center bg-800 rounded-md text-400 p-6 analytics-no-data-message">
                     <p>Geen gebruikersdata om weer te geven.</p>
                 </div>
             )}

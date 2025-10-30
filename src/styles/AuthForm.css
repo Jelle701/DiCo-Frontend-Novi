@@ -140,3 +140,9 @@
     line-height: 20px;
     margin-bottom: 0;
 }
+
+.loading-message {
+    text-align: center;
+    padding: var(--space-5);
+    color: var(--gray-300);
+}

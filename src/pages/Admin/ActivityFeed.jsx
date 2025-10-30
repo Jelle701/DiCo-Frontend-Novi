@@ -1,7 +1,13 @@
+/**
+ * ActivityFeed.jsx - Displays a list of recent administrative activities.
+ */
 import React, { useState, useEffect } from 'react';
 import { getRecentActivities } from '../../services/AdminService';
 
-// Helper to determine icon based on activity type
+/**
+ * @function getActivityIcon
+ * @summary Returns an emoji icon based on the activity type.
+ */
 const getActivityIcon = (type) => {
     switch (type) {
         case 'USER_REGISTRATION': return '👤';
@@ -11,6 +17,10 @@ const getActivityIcon = (type) => {
     }
 };
 
+/**
+ * @function TimeAgo
+ * @summary Displays a human-readable time difference from a given timestamp.
+ */
 const TimeAgo = ({ timestamp }) => {
     const time = new Date(timestamp);
     const seconds = Math.floor((new Date() - time) / 1000);
@@ -27,6 +37,10 @@ const TimeAgo = ({ timestamp }) => {
     return Math.floor(seconds) + " seconden geleden";
 };
 
+/**
+ * @function ActivityFeed
+ * @summary Fetches and displays recent activities for administrators.
+ */
 const ActivityFeed = () => {
     const [activities, setActivities] = useState([]);
     const [loading, setLoading] = useState(true);

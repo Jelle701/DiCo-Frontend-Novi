@@ -1,3 +1,6 @@
+/**
+ * SelectRolePage.jsx - Onboarding step for users to select their role.
+ */
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { updateUserProfile } from '../../../services/ProfileService';
@@ -5,9 +8,13 @@ import { useOnboarding } from '../../../contexts/OnboardingContext';
 import { useUser } from '../../../contexts/AuthContext';
 import Navbar from '../../../components/web components/Navbar.jsx';
 import '../../../styles/AuthForm.css';
-import { ROLES } from '../../../constants.js'; // Importeer de constanten
+import { ROLES } from '../../../constants.js';
 
-function SelectRolePage() {
+/**
+ * @function SelectRolePage
+ * @summary Allows new users to choose their role (Patient, Guardian, or Provider) during onboarding.
+ */
+const SelectRolePage = () => {
     const [selectedRole, setSelectedRole] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
@@ -17,9 +24,7 @@ function SelectRolePage() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log('[SelectRolePage] handleSubmit aangeroepen');
         if (!selectedRole) {
-            console.warn('[SelectRolePage] Geen rol geselecteerd');
             setError('Kies een rol om verder te gaan.');
             return;
         }
@@ -29,39 +34,26 @@ function SelectRolePage() {
 
         try {
             const payload = { role: selectedRole };
-            console.log('[SelectRolePage] Payload voor updateUserProfile:', payload);
             const { data: updatedProfile, error: apiError } = await updateUserProfile(payload);
 
             if (apiError) {
-                console.error('[SelectRolePage] Fout bij updateUserProfile API call:', apiError);
                 throw apiError;
             }
 
-            console.log('[SelectRolePage] updateUserProfile succesvol. Response:', updatedProfile);
-
-            // Update contexts
-            console.log('[SelectRolePage] Contexts updaten...');
             setUserData(updatedProfile);
             updateOnboardingData({ role: selectedRole });
-            console.log(`[SelectRolePage] Onboarding context geüpdatet met rol: ${selectedRole}`);
 
-            // Direct navigation
-            console.log(`[SelectRolePage] Navigeren op basis van rol: ${selectedRole}`);
             switch (selectedRole) {
                 case ROLES.PATIENT:
-                    console.log('[SelectRolePage] Navigeren naar /onboarding/preferences');
                     navigate('/onboarding/preferences');
                     break;
                 case ROLES.GUARDIAN:
-                    console.log('[SelectRolePage] Navigeren naar /guardian-portal');
                     navigate('/guardian-portal');
                     break;
                 case ROLES.PROVIDER:
-                    console.log('[SelectRolePage] Navigeren naar /provider-dashboard');
                     navigate('/provider-dashboard');
                     break;
                 default:
-                    console.error('[SelectRolePage] Ongeldige rol geselecteerd, kan niet navigeren.');
                     setError('Ongeldige rol geselecteerd, kan niet navigeren.');
                     setLoading(false);
             }
@@ -87,7 +79,6 @@ function SelectRolePage() {
                                 id="role-select"
                                 value={selectedRole}
                                 onChange={(e) => {
-                                    console.log(`[SelectRolePage] Rol geselecteerd: ${e.target.value}`);
                                     setSelectedRole(e.target.value);
                                     setError('');
                                 }}
@@ -116,6 +107,6 @@ function SelectRolePage() {
             </div>
         </>
     );
-}
+};
 
 export default SelectRolePage;

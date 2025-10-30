@@ -228,3 +228,34 @@
 .skeleton-role { flex: 1; }
 .skeleton-date { flex: 1.5; }
 .skeleton-actions { flex: 2; }
+
+/* Admin Dashboard specific table styles */
+.admin-table-checkbox-col {
+    width: 50px;
+}
+
+/* Analytics Charts Styles */
+.analytics-chart-container {
+    width: 100%;
+    height: 300px;
+}
+
+.analytics-tooltip-content {
+    background-color: var(--gray-700);
+    border: 1px solid var(--gray-600);
+    border-radius: var(--radius-md);
+    color: var(--color-white);
+}
+
+.analytics-no-data-message {
+    min-height: 150px;
+}
+
+/* Edit User Modal Styles */
+.edit-user-modal-content {
+    max-width: 600px;
+}
+
+.modal-actions-right {
+    justify-content: flex-end;
+}

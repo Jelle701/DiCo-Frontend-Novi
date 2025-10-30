@@ -1,6 +1,13 @@
+/**
+ * BypassRequiredFields.jsx - Development tool to bypass HTML5 form validation.
+ */
 import { useEffect } from 'react';
 
-function DevBypassValidation({ active = false }) {
+/**
+ * @function DevBypassValidation
+ * @summary Temporarily removes 'required' attribute from form elements in development.
+ */
+const DevBypassValidation = ({ active = false }) => {
     useEffect(() => {
         if (!import.meta.env.DEV || !active) return;
 
@@ -11,7 +18,7 @@ function DevBypassValidation({ active = false }) {
                 el.removeAttribute('required');
                 console.log(`[DevBypass] Removed 'required' from`, el);
             });
-        }, 100); // Wacht tot inputs volledig in de DOM staan
+        }, 100);
 
         return () => {
             clearTimeout(timer);
@@ -27,6 +34,6 @@ function DevBypassValidation({ active = false }) {
     }, [active]);
 
     return null;
-}
+};
 
 export default DevBypassValidation;

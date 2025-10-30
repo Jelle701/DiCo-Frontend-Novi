@@ -1,21 +1,25 @@
+/**
+ * AdminRoute.jsx - Protects routes, ensuring only authenticated administrators can access them.
+ */
 import React from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 import { useUser } from '../../contexts/AuthContext.jsx';
-import { ROLES } from '../../constants.js'; // Importeer de constanten
+import { ROLES } from '../../constants.js';
 
+/**
+ * @function AdminRoute
+ * @summary Renders child routes if the user is an authenticated administrator, otherwise redirects.
+ */
 const AdminRoute = () => {
     const { user, loading } = useUser();
 
     if (loading) {
-        // Show a loading indicator while user data is being fetched
-        return <div>Laden...</div>;
+        return <div className="loading-message">Laden...</div>;
     }
 
-    // Check if user is authenticated and has the ADMIN role
     if (user && user.role === ROLES.ADMIN) {
         return <Outlet />;
     } else {
-        // If not an admin, redirect to the dashboard or a 'not authorized' page
         return <Navigate to="/dashboard" replace />;
     }
 };

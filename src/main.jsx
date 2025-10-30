@@ -1,8 +1,6 @@
-// src/main.jsx
-
-// sentry is a tracking tool - in development
-// import "./sentry";
-
+/**
+ * main.jsx - Entry point for the React application.
+ */
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
@@ -12,14 +10,12 @@ import { OnboardingContextProvider } from './contexts/OnboardingContext.jsx';
 import { LibreViewContextProvider } from './contexts/LibreViewContext.jsx';
 import './index.css';
 
-
-
 ReactDOM.createRoot(document.getElementById('root')).render(
     <React.StrictMode>
         <BrowserRouter>
             <AuthContextProvider>
                 <OnboardingContextProvider>
-                    <LibreViewContextProvider> {/* Voeg de provider toe */} 
+                    <LibreViewContextProvider>
                         <App />
                     </LibreViewContextProvider>
                 </OnboardingContextProvider>

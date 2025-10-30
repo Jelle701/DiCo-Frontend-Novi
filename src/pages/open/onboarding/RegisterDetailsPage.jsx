@@ -1,20 +1,33 @@
+/**
+ * SelectRolePage.jsx - Onboarding step for users to select their role.
+ */
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-// import { updateUserRole } from '../../../services/ProfileService'; // Deze service moeten we later aanmaken/aanpassen
-import Navbar from '../../../components/web components/Navbar.jsx'; // Voeg Navbar import toe
-import '../../../styles/AuthForm.css'; // Importeer de nieuwe centrale stylesheet
+import Navbar from '../../../components/web components/Navbar.jsx';
+import '../../../styles/AuthForm.css';
 
-// Dit was RegisterDetailsPage, nu is het de Rol-Selectie Pagina.
-function SelectRolePage() {
+/**
+ * @function SelectRolePage
+ * @summary Allows new users to choose their role (Patient, Guardian, or Provider) during onboarding.
+ */
+const SelectRolePage = () => {
     const [selectedRole, setSelectedRole] = useState(null);
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
+    /**
+     * @function handleRoleSelection
+     * @summary Sets the selected role.
+     */
     const handleRoleSelection = (role) => {
         setSelectedRole(role);
     };
 
+    /**
+     * @function handleSubmit
+     * @summary Handles the submission of the selected role and navigates to the next onboarding step.
+     */
     const handleSubmit = async () => {
         if (!selectedRole) {
             setError('Kies een rol om verder te gaan.');
@@ -25,21 +38,17 @@ function SelectRolePage() {
         setError('');
 
         try {
-            // TODO: API-aanroep om de rol van de gebruiker op te slaan in de backend.
-            // await updateUserRole({ role: selectedRole });
+            // TODO: API call to save user role to backend.
 
-            // Navigeer naar de juiste Routes op basis van de gekozen rol.
             switch (selectedRole) {
                 case 'PATIENT':
-                    // De onboarding voor de patient is nog niet geimplementeerd.
-                    // We sturen ze voor nu naar een placeholder of het dashboard.
-                    navigate('/dashboard'); // TIJDELIJK: Moet naar de *echte* volgende stap.
+                    navigate('/dashboard');
                     break;
                 case 'GUARDIAN':
-                    navigate('/onboarding/link-patient'); // Aangepast naar de correcte onboarding route
+                    navigate('/onboarding/link-patient');
                     break;
                 case 'PROVIDER':
-                    navigate('/provider-dashboard'); // Aangepast naar de correcte provider route
+                    navigate('/provider-dashboard');
                     break;
                 default:
                     setError('Ongeldige rol geselecteerd.');
@@ -55,11 +64,11 @@ function SelectRolePage() {
     return (
         <>
             <Navbar />
-            <div className="auth-page-container"> {/* Gebruik de nieuwe container class */}
-                <div className="auth-form-card"> {/* Gebruik de nieuwe formulier card class */}
-                    <form onSubmit={(e) => { e.preventDefault(); handleSubmit(); }}> {/* Added form and preventDefault */}
+            <div className="auth-page-container">
+                <div className="auth-form-card">
+                    <form onSubmit={(e) => { e.preventDefault(); handleSubmit(); }}>
                         <h1>Kies uw rol</h1>
-                        <p className="auth-form-description">Stap 2: Selecteer hoe u deze applicatie wilt gebruiken.</p> {/* Gebruik de nieuwe description class */}
+                        <p className="auth-form-description">Stap 2: Selecteer hoe u deze applicatie wilt gebruiken.</p>
                         
                         <div className="role-options">
                             <div 
@@ -87,7 +96,7 @@ function SelectRolePage() {
 
                         {error && <p className="error-message">{error}</p>}
 
-                        <button type="submit" disabled={loading || !selectedRole} className="btn btn--primary form-action-button"> {/* Updated class name */}
+                        <button type="submit" disabled={loading || !selectedRole} className="btn btn--primary form-action-button">
                             {loading ? 'Bezig met opslaan...' : 'Volgende'}
                         </button>
                     </form>
@@ -95,6 +104,6 @@ function SelectRolePage() {
             </div>
         </>
     );
-}
+};
 
 export default SelectRolePage;

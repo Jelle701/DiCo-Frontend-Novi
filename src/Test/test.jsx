@@ -1,15 +1,17 @@
+/**
+ * test.jsx - Component for testing UI elements and styles.
+ */
 import React, { useState } from "react";
 import "./test.css";
 
-export default function Test() {
+const Test = () => {
     const [disabled, setDisabled] = useState(false);
 
     return (
         <div className="page--dark">
-            {/* Navbar */}
             <header className="navbar">
                 <div className="container d-flex w-100 justify-between items-center">
-                    <span className="small text-300" style={{ letterSpacing: '2px' }}>WHOOP-STYLE UI • DEMO</span>
+                    <span className="small text-300 header-text-spacing">DICO-STYLE UI • DEMO</span>
                     <div className="d-flex gap-3">
                         <button className="btn btn--ghost" onClick={() => setDisabled((v) => !v)}>
                             Toggle Disabled
@@ -19,7 +21,6 @@ export default function Test() {
                 </div>
             </header>
 
-            {/* Hero */}
             <section id="start" className="section">
                 <div className="container">
                     <div className="demo-hero card">
@@ -56,7 +57,6 @@ export default function Test() {
                 </div>
             </section>
 
-            {/* Cards & Badges */}
             <section className="section">
                 <div className="container">
                     <h2 className="mt-0">Cards & Badges</h2>
@@ -96,7 +96,6 @@ export default function Test() {
                 </div>
             </section>
 
-            {/* Form */}
             <section className="section">
                 <div className="container">
                     <h2 className="mt-0">Formulier</h2>
@@ -128,7 +127,6 @@ export default function Test() {
                 </div>
             </section>
 
-            {/* Table */}
             <section className="section pb-6">
                 <div className="container">
                     <h2 className="mt-0">Tabel</h2>
@@ -145,6 +143,8 @@ export default function Test() {
                             <tbody>
                             <tr>
                                 <td>01-10-2025</td>
+                                <td className="numeric">13.1</td>
+                                <td><span className="badge badge--recovery-med">YELLOW</span></td>
                                 <td className="numeric">13.1</td>
                                 <td><span className="badge badge--recovery-med">YELLOW</span></td>
                                 <td className="numeric">7h 10m</td>
@@ -168,10 +168,11 @@ export default function Test() {
                 </div>
             </section>
 
-            {/* Footer */}
             <footer className="container mb-6">
                 <p className="small text-300">© Demo • Gemaakt om snel je stylesheet te valideren.</p>
             </footer>
         </div>
     );
-}
+};
+
+export default Test;

@@ -1,15 +1,24 @@
+/**
+ * GoogleHealthPage.jsx - Provides an interface for users to integrate with Google Health.
+ */
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import './GoogleHealthPage.css';
 import Navbar from '../../components/web components/Navbar.jsx';
 
-function GoogleHealthPage() {
+/**
+ * @function GoogleHealthPage
+ * @summary Component for connecting the application with Google Health for data synchronization.
+ */
+const GoogleHealthPage = () => {
     const navigate = useNavigate();
 
+    /**
+     * @function handleConnect
+     * @summary Initiates the connection process with Google Health.
+     */
     const handleConnect = () => {
-        // Logica voor het verbinden met Google Health API
         console.log("Verbinden met Google Health...");
-        // Toon een succesbericht of navigeer naar een andere pagina
         alert("De verbinding met Google Health is succesvol gestart!");
     };
 
@@ -67,6 +76,6 @@ function GoogleHealthPage() {
             </div>
         </>
     );
-}
+};
 
 export default GoogleHealthPage;

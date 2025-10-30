@@ -1,4 +1,6 @@
-/* eslint-disable react-refresh/only-export-components */
+/**
+ * OnboardingContext.jsx - Manages onboarding data and submission for new users.
+ */
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { submitOnboardingProfile } from '../services/OnboardingService';
 import { useUser } from './AuthContext';
@@ -7,6 +9,10 @@ const OnboardingContext = createContext();
 
 const SESSION_STORAGE_KEY = 'onboarding_data';
 
+/**
+ * @function OnboardingContextProvider
+ * @summary Provides and manages the state for user onboarding data across the application.
+ */
 export function OnboardingContextProvider({ children }) {
     const [onboardingData, setOnboardingData] = useState(() => {
         try {
@@ -36,8 +42,11 @@ export function OnboardingContextProvider({ children }) {
         }
     }, [onboardingData]);
 
+    /**
+     * @function updateOnboardingData
+     * @summary Updates specific fields within the onboarding data state.
+     */
     const updateOnboardingData = (newData) => {
-        console.log('[OnboardingContext] updateOnboardingData aangeroepen met:', newData);
         setOnboardingData(prevData => {
             const updatedData = { ...prevData };
 
@@ -48,13 +57,15 @@ export function OnboardingContextProvider({ children }) {
                     updatedData[key] = newData[key];
                 }
             }
-            console.log('[OnboardingContext] Nieuwe onboardingData state:', updatedData);
             return updatedData;
         });
     };
 
+    /**
+     * @function submitOnboardingData
+     * @summary Submits the collected onboarding data to the backend.
+     */
     const submitOnboardingData = async (devices) => {
-        console.log('[OnboardingContext] submitOnboardingData aangeroepen');
         const finalData = {
             ...onboardingData,
             diabeticDevices: devices,
@@ -73,26 +84,22 @@ export function OnboardingContextProvider({ children }) {
         };
 
         const mapUnitToSystemValue = (unit) => {
-            // Correctly map the unit to the system value.
-            // mg/dL is common in the US (Imperial system for this context).
             if (unit === 'mg/dL') {
                 return 'IMPERIAL';
             }
-            // mmol/L is the standard SI unit (Metric).
             return 'METRIC';
         };
 
         const toInsulinEnum = (name) => {
             if (!name) return null;
             return name.toUpperCase().replace(/ /g, '_');
-        }
+        };
 
-        // DE FIX: Pas de payload aan om de nieuwe velden te reflecteren
         const flatProfileData = {
             role: finalData.role,
-            firstName: prefs.firstName, // NIEUW
-            lastName: prefs.lastName,   // NIEUW
-            system: mapUnitToSystemValue(medInfo.eenheid), // VERPLAATST
+            firstName: prefs.firstName,
+            lastName: prefs.lastName,
+            system: mapUnitToSystemValue(medInfo.eenheid),
             gender: mapGenderToSystemValue(prefs.geslacht),
             dateOfBirth: prefs.dateOfBirth,
             weight: parseFloat(prefs.gewicht) || 0,
@@ -116,8 +123,6 @@ export function OnboardingContextProvider({ children }) {
             throw new Error("Incomplete registration. The role was not selected.");
         }
 
-        console.log('%cFinal Onboarding Payload:', 'color: green; font-weight: bold;', flatProfileData);
-
         const { data, error } = await submitOnboardingProfile(flatProfileData);
 
         if (error) {
@@ -139,6 +144,10 @@ export function OnboardingContextProvider({ children }) {
     );
 }
 
+/**
+ * @function useOnboarding
+ * @summary Hook to access onboarding context values.
+ */
 export const useOnboarding = () => {
     return useContext(OnboardingContext);
 };

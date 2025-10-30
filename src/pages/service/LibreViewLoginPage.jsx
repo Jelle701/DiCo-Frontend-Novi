@@ -1,13 +1,20 @@
+/**
+ * LibreViewLoginPage.jsx - Handles user login and linking with LibreView service.
+ */
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { useLibreView } from '../../contexts/LibreViewContext.jsx'; // Gebruik de nieuwe context
+import { useLibreView } from '../../contexts/LibreViewContext.jsx';
 import { createLibreViewSession, invalidateLibreViewSession } from '../../services/LibreView/LibreViewService.jsx';
 import { getUserServices } from '../../services/UserService.jsx';
 import Navbar from '../../components/web components/Navbar.jsx';
 import libreViewLogo from '../../content/libre.svg';
 import '../../styles/AuthForm.css';
 
-function LibreViewLoginPage() {
+/**
+ * @function LibreViewLoginPage
+ * @summary Allows users to connect or disconnect their LibreView account for data synchronization.
+ */
+const LibreViewLoginPage = () => {
     const { login, logout } = useLibreView();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -28,23 +35,23 @@ function LibreViewLoginPage() {
         checkStatus();
     }, []);
 
+    /**
+     * @function handleSubmit
+     * @summary Handles the submission of LibreView credentials to create a new session.
+     */
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
         setError('');
 
         try {
-            // De nieuwe, stateless flow: één enkele aanroep
             const { data: sessionData, error: sessionError } = await createLibreViewSession(email, password);
 
             if (sessionError) {
                 throw new Error(sessionError.message || 'Koppeling mislukt. Controleer uw gegevens en probeer het opnieuw.');
             }
 
-            // Sla de volledige sessie op in de context
             login(sessionData);
-
-            // Na succes, navigeer direct terug.
             navigate('/service-hub', { state: { message: 'LibreView succesvol gekoppeld!' } });
 
         } catch (err) {
@@ -54,12 +61,16 @@ function LibreViewLoginPage() {
         }
     };
 
+    /**
+     * @function handleUnlink
+     * @summary Handles the unlinking of the LibreView account.
+     */
     const handleUnlink = async () => {
         setLoading(true);
         setError('');
         try {
             await invalidateLibreViewSession();
-            logout(); // Verwijder de sessie uit de frontend state
+            logout();
             navigate('/service-hub', { state: { message: 'De koppeling met uw LibreView-account is verwijderd.' } });
         } catch (err) {
             setError(err.message);
@@ -113,6 +124,6 @@ function LibreViewLoginPage() {
             </div>
         </>
     );
-}
+};
 
 export default LibreViewLoginPage;

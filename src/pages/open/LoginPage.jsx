@@ -1,28 +1,41 @@
+/**
+ * LoginPage.jsx - Handles user authentication and redirects based on role.
+ */
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth, useUser } from '../../contexts/AuthContext.jsx';
 import { loginUser } from '../../services/AuthService/AuthService.jsx';
 import Navbar from '../../components/web components/Navbar.jsx';
 import '../../styles/AuthForm.css';
-import { ROLES } from '../../constants.js'; // Importeer de constanten
+import { ROLES } from '../../constants.js';
 
-// Helper functie om e-mail te valideren
+/**
+ * @function isValidEmail
+ * @summary Validates an email address format.
+ */
 const isValidEmail = (email) => {
     const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
     return emailRegex.test(email);
 };
 
-// Robuuste helper functie om de rol te normaliseren
+/**
+ * @function normalizeRole
+ * @summary Normalizes a user role string by converting to uppercase and removing 'ROLE_' prefix.
+ */
 const normalizeRole = (role) => {
     if (typeof role !== 'string') return null;
-    let normalized = role.toUpperCase(); // 1. Converteer naar hoofdletters
-    if (normalized.startsWith('ROLE_')) { // 2. Verwijder prefix
+    let normalized = role.toUpperCase();
+    if (normalized.startsWith('ROLE_')) {
         normalized = normalized.substring(5);
     }
     return normalized;
 };
 
-function LoginPage() {
+/**
+ * @function LoginPage
+ * @summary Component for user login, handles authentication and redirects.
+ */
+const LoginPage = () => {
     const navigate = useNavigate();
     const { login, isAuth } = useAuth();
     const { user } = useUser();
@@ -35,7 +48,6 @@ function LoginPage() {
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        // Wacht tot de authenticatie is voltooid EN het user object is geladen.
         if (isAuth && user) {
             const userRole = normalizeRole(user.role);
 
@@ -57,7 +69,6 @@ function LoginPage() {
                         navigate('/', { replace: true });
                 }
             } else {
-                // Als de gebruiker wel is ingelogd maar geen rol heeft (bv. tijdens onboarding)
                 navigate('/onboarding/role', { replace: true });
             }
         }
@@ -100,7 +111,6 @@ function LoginPage() {
             setLoading(false);
         } else {
             login(data.jwt);
-            // De useEffect hierboven handelt de navigatie af zodra de user state is bijgewerkt.
         }
     };
 
@@ -154,6 +164,6 @@ function LoginPage() {
             </div>
         </>
     );
-}
+};
 
 export default LoginPage;

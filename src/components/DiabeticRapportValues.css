@@ -196,3 +196,25 @@
 .tir-bar__segment--above {
     background-color: var(--color-warning);
 }
+
+/* Custom Tooltip for Recharts */
+.dr-tooltip {
+  background-color: var(--gray-800);
+  border: 1px solid var(--gray-600);
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-2);
+}
+
+.dr-tooltip__value {
+  margin: 0;
+  color: var(--color-white);
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.dr-tooltip__date {
+  margin: 4px 0 0;
+  color: var(--gray-300);
+  font-size: 12px;
+}

@@ -1,7 +1,14 @@
+/**
+ * LibreViewContext.jsx - Provides LibreView session management to the application.
+ */
 import React, { createContext, useState, useContext, useEffect } from 'react';
 
 const LibreViewContext = createContext(null);
 
+/**
+ * @function LibreViewContextProvider
+ * @summary Manages the LibreView session state, including login and logout.
+ */
 export function LibreViewContextProvider({ children }) {
     const [session, setSession] = useState(() => {
         try {
@@ -20,10 +27,18 @@ export function LibreViewContextProvider({ children }) {
         }
     }, [session]);
 
+    /**
+     * @function login
+     * @summary Sets the LibreView session data.
+     */
     const login = (sessionData) => {
         setSession(sessionData);
     };
 
+    /**
+     * @function logout
+     * @summary Clears the LibreView session data.
+     */
     const logout = () => {
         setSession(null);
     };
@@ -42,6 +57,10 @@ export function LibreViewContextProvider({ children }) {
     );
 }
 
+/**
+ * @function useLibreView
+ * @summary Hook to access LibreView session state and actions.
+ */
 export const useLibreView = () => {
     const context = useContext(LibreViewContext);
     if (!context) {

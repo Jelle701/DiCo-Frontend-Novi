@@ -1,11 +1,18 @@
+/**
+ * DiabeticDevices.jsx - Onboarding step for users to select their diabetic devices.
+ */
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useOnboarding } from '../../../contexts/OnboardingContext';
 import devicesData from '../../../Data/DiabeticDevices.json';
 import Navbar from '../../../components/web components/Navbar.jsx';
-import '../../../styles/AuthForm.css'; // Importeer de nieuwe centrale stylesheet
+import '../../../styles/AuthForm.css';
 
-function DiabeticDevices() {
+/**
+ * @function DiabeticDevices
+ * @summary Allows users to select their CGM, insulin pump, and blood glucose meter during onboarding.
+ */
+const DiabeticDevices = () => {
     const { submitOnboardingData } = useOnboarding();
     const navigate = useNavigate();
 
@@ -17,6 +24,10 @@ function DiabeticDevices() {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
 
+    /**
+     * @function handleChange
+     * @summary Updates the selected brand or model for a given device category.
+     */
     const handleChange = (category, field, value) => {
         setSelections(prev => ({
             ...prev,
@@ -28,6 +39,10 @@ function DiabeticDevices() {
         }));
     };
 
+    /**
+     * @function handleSubmit
+     * @summary Collects selected devices and submits the final onboarding data.
+     */
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
@@ -45,6 +60,10 @@ function DiabeticDevices() {
         }
     };
 
+    /**
+     * @function renderDeviceSelector
+     * @summary Renders dropdowns for selecting a device brand and model within a category.
+     */
     const renderDeviceSelector = (categoryKey, categoryName) => {
         const categoryData = devicesData[categoryName] || [];
         const currentSelection = selections[categoryKey] || { brand: '', model: '' };
@@ -85,15 +104,14 @@ function DiabeticDevices() {
     return (
         <>
             <Navbar />
-            <div className="auth-page-container"> {/* Gebruik de nieuwe container class */}
-                <div className="auth-form-card"> {/* Gebruik de nieuwe formulier card class */}
+            <div className="auth-page-container">
+                <div className="auth-form-card">
                     <form onSubmit={handleSubmit}>
                         <h1>Hulpmiddelen</h1>
-                        <p className="auth-form-description">Selecteer de hulpmiddelen die u gebruikt. Dit is niet verplicht.</p> {/* Gebruik de nieuwe description class */}
+                        <p className="auth-form-description">Selecteer de hulpmiddelen die u gebruikt. Dit is niet verplicht.</p>
 
                         {renderDeviceSelector('cgm', 'CGM')}
                         {renderDeviceSelector('insulinPump', 'Insulinepompen')}
-                        {/* DE FIX: De typefout is hier gecorrigeerd */}
                         {renderDeviceSelector('bloodGlucoseMeter', 'Bloedglucosemeters')}
 
                         {error && <p className="error-message">{error}</p>}
@@ -106,6 +124,6 @@ function DiabeticDevices() {
             </div>
         </>
     );
-}
+};
 
 export default DiabeticDevices;

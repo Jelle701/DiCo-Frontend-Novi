@@ -1,15 +1,16 @@
-// src/App.jsx
+/**
+ * App.jsx - Main application component defining routes and lazy-loaded pages.
+ */
 import React, { Suspense, lazy } from 'react';
 import { Routes, Route, Navigate } from "react-router-dom";
 
-// Component Imports
 import PublicRoute from "./components/Routes/PublicRoute.jsx";
 import PrivateRoute from "./components/Routes/PrivateRoute.jsx";
-import AdminRoute from './components/Routes/AdminRoute.jsx'; // Import AdminRoute
+import AdminRoute from './components/Routes/AdminRoute.jsx';
 
 const Test = lazy(() => import('./Test/test.jsx'));
 
-// --- Page Imports (Lazily Loaded) ---
+// Page Imports (Lazily Loaded)
 const HomePage = lazy(() => import('./pages/open/HomePage.jsx'));
 const LoginPage = lazy(() => import('./pages/open/LoginPage.jsx'));
 const DashboardPage = lazy(() => import('./pages/patient/DashboardPage.jsx'));
@@ -44,16 +45,15 @@ function App() {
     return (
         <Suspense fallback={<LoadingFallback />}>
             <Routes>
-                {/* --- Public Routes --- */}
+                {/* Public Routes */}
                 <Route path="/" element={<HomePage />} />
                 <Route path="/login" element={<PublicRoute><LoginPage /></PublicRoute>} />
                 <Route path="/register" element={<PublicRoute><RegisterPage /></PublicRoute>} />
                 <Route path="/verify" element={<PublicRoute><VerifyEmailPage /></PublicRoute>} />
                 <Route path="/test" element={<PublicRoute><Test /></PublicRoute>} />
 
-                {/* --- Private Routes (require authentication) --- */}
+                {/* Private Routes (require authentication) */}
                 <Route element={<PrivateRoute />}>
-                    {/* Redirect for a legacy route */}
                     <Route path="/register-details" element={<Navigate to="/onboarding/role" replace />} />
 
                     {/* Onboarding Flow */}
@@ -68,7 +68,7 @@ function App() {
                     <Route path="/my-data" element={<MyDataPage />} />
                     <Route path="/service-hub" element={<ServiceHubPage />} />
                     <Route path="/service-hub/libreview-login" element={<LibreViewLoginPage />} />
-                    <Route path="/libreview-test" element={<LibreViewTestPage />} /> {/* Nieuwe testroute */}
+                    <Route path="/libreview-test" element={<LibreViewTestPage />} />
                     
                     {/* Guardian Routes */}
                     <Route path="/guardian-portal" element={<GuardianPortal />} />
@@ -82,13 +82,12 @@ function App() {
                     <Route element={<AdminRoute />}>
                         <Route path="/admin-dashboard" element={<AdminDashboard />} />
                         <Route path="/admin-dashboard#management" element={<AdminDashboard />} />
-                        {/* Redirect for the old admin path */}
                         <Route path="/admin/dashboard" element={<Navigate to="/admin-dashboard" replace />} />
                         <Route path="/admin/management" element={<Navigate to="/admin-dashboard#management" replace />} />
                     </Route>
                 </Route>
 
-                {/* --- Catch-all Route --- */}
+                {/* Catch-all Route */}
                 <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
         </Suspense>

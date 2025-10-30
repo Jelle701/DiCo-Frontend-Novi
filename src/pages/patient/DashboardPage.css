@@ -245,6 +245,39 @@
     font-weight: 600;
 }
 
+/* Custom Tooltip for Recharts */
+.custom-tooltip {
+    background-color: var(--gray-800);
+    border: 1px solid var(--gray-600);
+    padding: var(--space-3);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-2);
+}
+
+.custom-tooltip-value {
+    margin: 0;
+    color: var(--color-white);
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.custom-tooltip-date {
+    margin: 4px 0 0;
+    color: var(--gray-300);
+    font-size: 12px;
+}
+
+/* Glucose value styling */
+.glucose-value--high {
+    color: var(--color-warning);
+    font-weight: bold;
+}
+
+.glucose-value--low {
+    color: var(--color-danger);
+    font-weight: bold;
+}
+
 /* ==========================================================================
    Responsive Design
    ========================================================================== */

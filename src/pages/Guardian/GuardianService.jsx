@@ -1,8 +1,12 @@
+/**
+ * GuardianService.jsx - Provides API services for guardian-related operations.
+ */
 import apiClient from '../../services/ApiClient.jsx';
 import { handleApiError } from '../../services/ApiErrorHandler.jsx';
 
 /**
- * Haalt de profielen op van alle patiënten die aan de ingelogde ouder (guardian) zijn gekoppeld.
+ * @function getLinkedPatientsForGuardian
+ * @summary Fetches profiles of all patients linked to the logged-in guardian.
  * @returns {Promise<{data: any, error: any}>}
  */
 export const getLinkedPatientsForGuardian = async () => {
@@ -15,8 +19,9 @@ export const getLinkedPatientsForGuardian = async () => {
 };
 
 /**
- * Koppelt een patiënt aan de ingelogde ouder (guardian) via een toegangscode.
- * @param {string} accessCode - De unieke toegangscode van de patiënt.
+ * @function linkPatientByCode
+ * @summary Links a patient to the logged-in guardian using an access code.
+ * @param {string} accessCode - The patient's unique access code.
  * @returns {Promise<{data: any, error: any}>}
  */
 export const linkPatientByCode = async (accessCode) => {
@@ -29,8 +34,9 @@ export const linkPatientByCode = async (accessCode) => {
 };
 
 /**
- * Haalt de glucosemetingen op voor een specifieke patiënt, gekoppeld aan de ouder.
- * @param {number} patientId - Het ID van de patiënt.
+ * @function getGlucoseMeasurementsForPatient
+ * @summary Fetches glucose measurements for a specific patient linked to the guardian.
+ * @param {number} patientId - The ID of the patient.
  * @returns {Promise<{data: any, error: any}>}
  */
 export const getGlucoseMeasurementsForPatient = async (patientId) => {

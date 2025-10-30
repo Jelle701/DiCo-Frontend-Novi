@@ -1,5 +1,12 @@
+/**
+ * TableSkeleton.jsx - A loading skeleton component for tables.
+ */
 import React from 'react';
 
+/**
+ * @function SkeletonRow
+ * @summary Renders a single skeleton row for a table.
+ */
 const SkeletonRow = () => (
     <div className="skeleton-row d-flex gap-4 p-4">
         <div className="skeleton-cell skeleton-checkbox"></div>
@@ -12,6 +19,10 @@ const SkeletonRow = () => (
     </div>
 );
 
+/**
+ * @function TableSkeleton
+ * @summary Renders a specified number of skeleton rows to indicate loading state.
+ */
 const TableSkeleton = ({ rows = 10 }) => {
     return (
         <div className="skeleton-table">

@@ -1,14 +1,19 @@
+/**
+ * PatientPortal.jsx - Provides a portal for healthcare providers to manage and view patient data.
+ */
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom'; // Importeer useNavigate
-import { getLinkedPatients, linkPatient, getDelegateTokenForPatient } from '../../services/ProviderService.jsx'; // Importeer getDelegateTokenForPatient
+import { useNavigate } from 'react-router-dom';
+import { getLinkedPatients, linkPatient, getDelegateTokenForPatient } from '../../services/ProviderService.jsx';
 import { getDiabetesSummaryForPatient } from '../../services/DiabetesService.jsx';
 import Navbar from '../../components/web components/Navbar.jsx';
 import DiabeticRapportValues from '../../components/DiabeticRapportValues.jsx';
 import '../../components/DiabeticRapportValues.css';
 import './PatientPortal.css';
 
-// --- Child Components ---
-
+/**
+ * @function PatientListSidebar
+ * @summary Displays a searchable list of linked patients and allows adding new ones.
+ */
 const PatientListSidebar = ({ patients, selectedPatient, onSelectPatient, onAddPatient, searchTerm, setSearchTerm }) => {
     return (
         <aside className="patient-list-sidebar">
@@ -49,6 +54,10 @@ const PatientListSidebar = ({ patients, selectedPatient, onSelectPatient, onAddP
     );
 };
 
+/**
+ * @function PatientDetailView
+ * @summary Displays detailed information and a diabetes summary for a selected patient.
+ */
 const PatientDetailView = ({ patient, summaryData, summaryLoading, summaryError }) => {
     const navigate = useNavigate();
 
@@ -58,13 +67,12 @@ const PatientDetailView = ({ patient, summaryData, summaryLoading, summaryError 
         const { data, error } = await getDelegateTokenForPatient(patient.id);
         if (error) {
             console.error('Fout bij ophalen gedelegeerd token:', error);
-            // Toon hier een foutmelding aan de gebruiker
             return;
         }
 
         if (data?.delegatedToken) {
             sessionStorage.setItem('delegatedToken', data.delegatedToken);
-            sessionStorage.setItem('patientUsername', patient.email); // Of patient.firstName + ' ' + patient.lastName
+            sessionStorage.setItem('patientUsername', patient.email);
             navigate('/dashboard');
         }
     };
@@ -112,7 +120,6 @@ const PatientDetailView = ({ patient, summaryData, summaryLoading, summaryError 
                     </div>
                 </div>
 
-                {/* Diabetes Summary Section */}
                 <div className="summary-container-portal">
                     {summaryLoading ? (
                         <p>Samenvatting laden...</p>
@@ -129,6 +136,10 @@ const PatientDetailView = ({ patient, summaryData, summaryLoading, summaryError 
     );
 };
 
+/**
+ * @function AddPatientModal
+ * @summary Modal for linking a new patient using an access code.
+ */
 const AddPatientModal = ({ show, onClose, onSubmit, newPatientCode, setNewPatientCode, error }) => {
     if (!show) return null;
 
@@ -164,9 +175,11 @@ const AddPatientModal = ({ show, onClose, onSubmit, newPatientCode, setNewPatien
     );
 };
 
-// --- Main Component ---
-
-function PatientPortal() {
+/**
+ * @function PatientPortal
+ * @summary Main component for the Provider Patient Portal, managing linked patients and their details.
+ */
+const PatientPortal = () => {
     const [allPatients, setAllPatients] = useState([]);
     const [selectedPatient, setSelectedPatient] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -176,7 +189,6 @@ function PatientPortal() {
     const [newPatientCode, setNewPatientCode] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
 
-    // State for the selected patient's summary
     const [summaryData, setSummaryData] = useState(null);
     const [summaryLoading, setSummaryLoading] = useState(false);
     const [summaryError, setSummaryError] = useState('');
@@ -203,7 +215,6 @@ function PatientPortal() {
         fetchPatients();
     }, [fetchPatients]);
 
-    // Effect to fetch summary when a patient is selected
     useEffect(() => {
         if (selectedPatient) {
             const fetchSummary = async () => {
@@ -216,7 +227,7 @@ function PatientPortal() {
                         setSummaryError(apiError.message || 'Kon samenvatting niet laden.');
                         setSummaryData(null);
                     } else {
-                        setSummaryData(data); // Sla alleen de daadwerkelijke data op
+                        setSummaryData(data);
                     }
                 } catch (err) {
                     setSummaryError(err.message || 'Kon samenvatting niet laden.');
@@ -293,6 +304,6 @@ function PatientPortal() {
             </div>
         </>
     );
-}
+};
 
 export default PatientPortal;

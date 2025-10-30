@@ -1,9 +1,12 @@
+/**
+ * LibreViewTestPage.jsx - Provides a testing interface for LibreView API integration.
+ */
 import React, { useState } from 'react';
 import Navbar from '../../components/web components/Navbar.jsx';
 import { useLibreView } from '../../contexts/LibreViewContext.jsx';
-import { 
-    createLibreViewSession, 
-    invalidateLibreViewSession, 
+import {
+    createLibreViewSession,
+    invalidateLibreViewSession,
     getLibreViewConnections,
     getLibreViewGlucoseGraph,
     getLibreViewGlucoseHistory
@@ -11,13 +14,21 @@ import {
 import '../../styles/AuthForm.css';
 import './LibreViewTestPage.css';
 
-function LibreViewTestPage() {
+/**
+ * @function LibreViewTestPage
+ * @summary Component for testing various LibreView API functionalities, including login, session management, and data retrieval.
+ */
+const LibreViewTestPage = () => {
     const { session, login, logout, isLoggedIn } = useLibreView();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [apiResponse, setApiResponse] = useState(null);
     const [loading, setLoading] = useState(false);
 
+    /**
+     * @function handleAction
+     * @summary Executes a specified LibreView API action and updates the response state.
+     */
     const handleAction = async (action) => {
         setLoading(true);
         setApiResponse(null);
@@ -27,11 +38,10 @@ function LibreViewTestPage() {
                 case 'login':
                     result = await createLibreViewSession(email, password);
                     if (result.error) throw new Error(result.error.message || result.error);
-                    login(result.data); // Sla de sessie op in de context
+                    login(result.data);
                     setApiResponse({ message: 'Succesvol ingelogd. Sessie is nu in de frontend state.', data: result.data });
                     break;
                 case 'logout':
-                    // Voor een stateless aanpak, hoeven we alleen de frontend state te wissen
                     logout();
                     setApiResponse({ message: 'Sessie is uit de frontend state verwijderd.' });
                     break;
@@ -67,7 +77,7 @@ function LibreViewTestPage() {
         <>
             <Navbar />
             <div className="auth-page-container">
-                <div className="auth-form-card" style={{ maxWidth: '900px' }}>
+                <div className="auth-form-card libreview-test-card">
                     <h1>LibreView API Testpagina (Stateless)</h1>
                     <p className="auth-form-description">Test hier de stateless integratie met de LibreView API.</p>
 
@@ -99,6 +109,6 @@ function LibreViewTestPage() {
             </div>
         </>
     );
-}
+};
 
 export default LibreViewTestPage;

@@ -1,8 +1,12 @@
+/**
+ * ProfileService.jsx - Provides API services for managing user profiles.
+ */
 import apiClient from './ApiClient';
 import { handleApiError } from './ApiErrorHandler';
 
 /**
- * Haalt het profiel op van de ingelogde gebruiker.
+ * @function getMyProfile
+ * @summary Fetches the profile of the currently logged-in user.
  * @returns {Promise<{data: object|null, error: object|null}>}
  */
 export async function getMyProfile() {
@@ -15,8 +19,9 @@ export async function getMyProfile() {
 }
 
 /**
- * Werkt het profiel van de ingelogde gebruiker bij.
- * @param {object} profileData - De bij te werken profielgegevens.
+ * @function updateUserProfile
+ * @summary Updates the profile of the currently logged-in user.
+ * @param {object} profileData - The profile data to update.
  * @returns {Promise<{data: object|null, error: object|null}>}
  */
 export async function updateUserProfile(profileData) {
@@ -29,9 +34,9 @@ export async function updateUserProfile(profileData) {
 }
 
 /**
- * Slaat de LibreView-inloggegevens van de gebruiker op voor automatische synchronisatie.
- * @param {string} libreViewEmail - Het e-mailadres voor LibreView.
- * @param {string} libreViewPassword - Het wachtwoord voor LibreView.
+ * @function saveLibreViewCredentials
+ * @summary Saves the user's LibreView login credentials for automatic synchronization.
+ * @param {object} credentials - Object containing libreViewEmail and libreViewPassword.
  * @returns {Promise<{data: object|null, error: object|null}>}
  */
 export async function saveLibreViewCredentials({ libreViewEmail, libreViewPassword }) {

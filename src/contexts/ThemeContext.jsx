@@ -1,24 +1,27 @@
-/* eslint-disable react-refresh/only-export-components */
-// src/contexts/ThemeContext.jsx
-
+/**
+ * ThemeContext.jsx - Provides theme management (light/dark mode) for the application.
+ */
 import React, { createContext, useState, useContext, useEffect } from 'react';
 
-// Maak de context aan. Deze hoeft niet geëxporteerd te worden.
 const ThemeContext = createContext();
 
-// De provider component die de state en logica bevat.
+/**
+ * @function ThemeProvider
+ * @summary Manages the application's theme state and applies it to the document body.
+ */
 export function ThemeProvider({ children }) {
-    // Haal het thema uit localStorage of gebruik 'light' als standaard
     const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'light');
 
-    // Effect om de class op de <body> aan te passen en de keuze op te slaan
     useEffect(() => {
-        document.body.className = ''; // Reset classes
+        document.body.className = '';
         document.body.classList.add(theme);
         localStorage.setItem('theme', theme);
     }, [theme]);
 
-    // Functie om het thema te wisselen
+    /**
+     * @function toggleTheme
+     * @summary Toggles the current theme between 'light' and 'dark'.
+     */
     const toggleTheme = () => {
         setTheme(prevTheme => (prevTheme === 'light' ? 'dark' : 'light'));
     };
@@ -35,12 +38,14 @@ export function ThemeProvider({ children }) {
     );
 }
 
-// Dit is de custom hook die componenten zullen gebruiken.
-// Het is de enige export die componenten nodig hebben om de context te gebruiken.
+/**
+ * @function useTheme
+ * @summary Hook to access the current theme and the toggleTheme function.
+ */
 export function useTheme() {
     const context = useContext(ThemeContext);
     if (context === undefined) {
-        throw new Error('useTheme moet binnen een ThemeProvider gebruikt worden');
+        throw new Error('useTheme must be used within a ThemeProvider');
     }
     return context;
 }

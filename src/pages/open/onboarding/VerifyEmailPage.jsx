@@ -1,9 +1,16 @@
+/**
+ * VerifyEmailPage.jsx - Handles email verification during the user registration process.
+ */
 import React, { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { verifyEmail } from '../../../services/AuthService/AuthService';
 import Navbar from '../../../components/web components/Navbar.jsx';
-import '../../../styles/AuthForm.css'; // Importeer de nieuwe centrale stylesheet
+import '../../../styles/AuthForm.css';
 
+/**
+ * @function VerifyEmailPage
+ * @summary Allows users to enter a verification token sent to their email to complete registration.
+ */
 const VerifyEmailPage = () => {
     const [token, setToken] = useState('');
     const [isLoading, setIsLoading] = useState(false);
@@ -56,13 +63,13 @@ const VerifyEmailPage = () => {
     return (
         <>
             <Navbar />
-            <div className="auth-page-container"> {/* Gebruik de nieuwe container class */}
-                <div className="auth-form-card"> {/* Gebruik de nieuwe formulier card class */}
+            <div className="auth-page-container">
+                <div className="auth-form-card">
                     {userEmail ? (
                         <form onSubmit={handleSubmit}>
                             <h1>Verifieer je e-mailadres</h1>
-                            <p className="auth-form-description">We hebben een verificatiecode gestuurd naar <strong>{userEmail}</strong>.</p> {/* Gebruik de nieuwe description class */}
-                            <p className="text-400 small mt-neg-7"> {/* Replaced inline style with utility classes */}
+                            <p className="auth-form-description">We hebben een verificatiecode gestuurd naar <strong>{userEmail}</strong>.</p>
+                            <p className="text-400 small mt-neg-7">
                                 (Voor ontwikkelingsdoeleinden: controleer de backend-console voor de code).
                             </p>
                             
@@ -90,7 +97,7 @@ const VerifyEmailPage = () => {
                     ) : (
                         <div>
                             <h1>Fout</h1>
-                            <p className="error-message">{error}</p> {/* Added class for consistency */}
+                            <p className="error-message">{error}</p>
                             <button onClick={() => navigate('/register')} className="btn btn--primary form-action-button">
                                 Terug naar Registratie
                             </button>

@@ -1,11 +1,17 @@
+/**
+ * OnboardingLinkPatientPage.jsx - Onboarding step for guardians to link to a patient's account.
+ */
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-// Import the new, centralized service function
 import { linkPatient } from '../../../services/ProviderService.jsx';
 import Navbar from '../../../components/web components/Navbar.jsx';
 import '../../../styles/AuthForm.css';
 
-function OnboardingLinkPatientPage() {
+/**
+ * @function OnboardingLinkPatientPage
+ * @summary Allows guardians to enter an access code to link with a patient.
+ */
+const OnboardingLinkPatientPage = () => {
     const [accessCode, setAccessCode] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
@@ -23,18 +29,15 @@ function OnboardingLinkPatientPage() {
         }
 
         try {
-            // Use the new, centralized service function
             const { error: apiError } = await linkPatient(accessCode);
 
             if (apiError) {
                 throw apiError;
             }
 
-            // Navigeer naar de portal na een succesvolle koppeling
             navigate('/patient-portal');
 
         } catch (err) {
-            // Use the standardized error message from the service
             setError(err.message || 'Er is een onbekende fout opgetreden. Probeer het later opnieuw.');
         } finally {
             setLoading(false);
@@ -73,6 +76,6 @@ function OnboardingLinkPatientPage() {
             </div>
         </>
     );
-}
+};
 
 export default OnboardingLinkPatientPage;

@@ -1,10 +1,17 @@
+/**
+ * MedicineInfo.jsx - Onboarding step for users to provide their diabetes and medication information.
+ */
 import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useOnboarding } from '../../../contexts/OnboardingContext';
 import medicatieData from '../../../Data/MedicatieDataSet.json';
 import Navbar from '../../../components/web components/Navbar.jsx';
-import '../../../styles/AuthForm.css'; // Importeer de nieuwe centrale stylesheet
+import '../../../styles/AuthForm.css';
 
+/**
+ * @constant DIABETES_TYPES
+ * @summary Array of available diabetes types for selection.
+ */
 const DIABETES_TYPES = [
     { value: 'TYPE_1', label: 'Type 1' },
     { value: 'TYPE_2', label: 'Type 2' },
@@ -14,7 +21,11 @@ const DIABETES_TYPES = [
     { value: 'OTHER', label: 'Anders/Onbekend' },
 ];
 
-function MedicineInfo() {
+/**
+ * @function MedicineInfo
+ * @summary Allows users to input their diabetes type, glucose measurement unit, and insulin usage.
+ */
+const MedicineInfo = () => {
     const navigate = useNavigate();
     const { onboardingData, updateOnboardingData } = useOnboarding();
 
@@ -48,7 +59,7 @@ function MedicineInfo() {
     }, []);
 
     const [formData, setFormData] = useState({
-        eenheid: onboardingData.medicineInfo?.eenheid || 'mmol/L', // NIEUW
+        eenheid: onboardingData.medicineInfo?.eenheid || 'mmol/L',
         diabetesType: onboardingData.medicineInfo?.diabetesType || '',
         gebruiktInsuline: onboardingData.medicineInfo?.gebruiktInsuline || 'nee',
         longActing: onboardingData.medicineInfo?.longActing || { manufacturer: '', insulin: '', },
@@ -56,6 +67,10 @@ function MedicineInfo() {
     });
     const [error, setError] = useState('');
 
+    /**
+     * @function handleChange
+     * @summary Handles changes for insulin manufacturer and type selections.
+     */
     const handleChange = (e, category, field) => {
         const { value } = e.target;
         setFormData(prevState => {
@@ -67,11 +82,19 @@ function MedicineInfo() {
         });
     };
     
+    /**
+     * @function handleTopLevelChange
+     * @summary Handles changes for top-level form fields like diabetes type or unit.
+     */
     const handleTopLevelChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
+    /**
+     * @function handleSubmit
+     * @summary Validates form data, updates onboarding context, and navigates to the next step.
+     */
     const handleSubmit = (e) => {
         e.preventDefault();
         if (!formData.diabetesType) {
@@ -82,13 +105,17 @@ function MedicineInfo() {
         navigate('/onboarding/devices');
     };
 
+    /**
+     * @function renderInsulinSelector
+     * @summary Renders dropdowns for selecting insulin manufacturer and type.
+     */
     const renderInsulinSelector = (type, label, manufacturers) => {
         const category = type === 'long' ? 'longActing' : 'shortActing';
         const selectedManufacturer = formData[category].manufacturer;
         const availableInsulins = selectedManufacturer ? (insulinsByManufacturer[selectedManufacturer] || []) : [];
 
         return (
-            <div className="device-category-box mt-0"> {/* Removed inline style, using utility class */}
+            <div className="device-category-box mt-0">
                 <h2>{label}</h2>
                 <div className="input-group">
                     <label htmlFor={`${category}-manufacturer`}>Fabrikant</label>
@@ -111,13 +138,12 @@ function MedicineInfo() {
     return (
         <>
             <Navbar />
-            <div className="auth-page-container"> {/* Gebruik de nieuwe container class */}
-                <div className="auth-form-card"> {/* Gebruik de nieuwe formulier card class */}
+            <div className="auth-page-container">
+                <div className="auth-form-card">
                     <form onSubmit={handleSubmit}>
                         <h1>Medische Informatie</h1>
-                        <p className="auth-form-description">Deze informatie helpt ons om de app beter op jou af te stemmen.</p> {/* Gebruik de nieuwe description class */}
+                        <p className="auth-form-description">Deze informatie helpt ons om de app beter op jou af te stemmen.</p>
                         
-                        {/* VERPLAATST VELD */}
                         <div className="input-group">
                             <label>Eenheid voor glucosemeting</label>
                             <select name="eenheid" value={formData.eenheid} onChange={handleTopLevelChange}>
@@ -149,7 +175,7 @@ function MedicineInfo() {
                         </div>
 
                         {formData.gebruiktInsuline === 'ja' && (
-                            <div className="d-flex flex-column gap-5"> {/* Removed inline style, using utility classes */}
+                            <div className="d-flex flex-column gap-5">
                                 {renderInsulinSelector('long', 'Langwerkende Insuline', longManufacturers)}
                                 {renderInsulinSelector('short', 'Kortwerkende Insuline', shortManufacturers)}
                             </div>
@@ -162,6 +188,6 @@ function MedicineInfo() {
             </div>
         </>
     );
-}
+};
 
 export default MedicineInfo;

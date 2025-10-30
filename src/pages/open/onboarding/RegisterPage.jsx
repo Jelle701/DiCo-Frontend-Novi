@@ -1,17 +1,26 @@
+/**
+ * RegisterPage.jsx - Handles user registration for creating a new account.
+ */
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { registerUser } from '../../../services/AuthService/AuthService.jsx';
-import Navbar from '../../../components/web components/Navbar.jsx'; // Importeer de Navbar
-import '../../../styles/AuthForm.css'; // Importeer de nieuwe centrale stylesheet
+import Navbar from '../../../components/web components/Navbar.jsx';
+import '../../../styles/AuthForm.css';
 
-// Helper functie om e-mail te valideren
+/**
+ * @function isValidEmail
+ * @summary Validates an email address format.
+ */
 const isValidEmail = (email) => {
     const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
     return emailRegex.test(email);
 };
 
-// Stap 1 van de nieuwe Routes: Een generiek account aanmaken.
-function RegisterPage() {
+/**
+ * @function RegisterPage
+ * @summary Component for user registration, handling email and password input.
+ */
+const RegisterPage = () => {
     const [formData, setFormData] = useState({
         email: '',
         password: '',
@@ -29,7 +38,6 @@ function RegisterPage() {
         e.preventDefault();
         setError('');
 
-        // E-mail validatie toegevoegd
         if (!isValidEmail(formData.email)) {
             setError('Voer een geldig e-mailadres in.');
             return;
@@ -40,7 +48,6 @@ function RegisterPage() {
             return;
         }
 
-        // Verwijder confirmPassword uit de data die naar de backend wordt gestuurd.
         const { confirmPassword, ...registrationData } = formData;
 
         const { data, error: apiError } = await registerUser(registrationData);
@@ -49,7 +56,6 @@ function RegisterPage() {
             setError(apiError.message || 'Registratie mislukt. Probeer het opnieuw.');
             console.error('Registration error:', apiError);
         } else {
-            // Geef de email mee aan de verificatiepagina.
             navigate('/verify', { state: { email: formData.email } });
         }
     };
@@ -57,11 +63,11 @@ function RegisterPage() {
     return (
         <>
             <Navbar />
-            <div className="auth-page-container"> {/* Gebruik de nieuwe container class */}
-                <div className="auth-form-card"> {/* Gebruik de nieuwe formulier card class */}
+            <div className="auth-page-container">
+                <div className="auth-form-card">
                     <form onSubmit={handleSubmit}>
                         <h1>Maak een account aan</h1>
-                        <p className="auth-form-description">Stap 1: Registreer uw e-mailadres en wachtwoord.</p> {/* Gebruik de nieuwe description class */}
+                        <p className="auth-form-description">Stap 1: Registreer uw e-mailadres en wachtwoord.</p>
                         <div className="input-group">
                             <label htmlFor="email">E-mailadres</label>
                             <input type="email" id="email" name="email" value={formData.email} onChange={handleChange} required />
@@ -86,6 +92,6 @@ function RegisterPage() {
             </div>
         </>
     );
-}
+};
 
 export default RegisterPage;

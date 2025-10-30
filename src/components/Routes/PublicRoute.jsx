@@ -1,26 +1,29 @@
+/**
+ * PublicRoute.jsx - Manages access to public routes, redirecting authenticated users to their appropriate dashboards.
+ */
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth, useUser } from '../../contexts/AuthContext.jsx';
-import { ROLES } from '../../constants.js'; // Importeer de constanten
+import { ROLES } from '../../constants.js';
 
+/**
+ * @function PublicRoute
+ * @summary Renders child routes if unauthenticated, or redirects authenticated users based on their role.
+ */
 const PublicRoute = ({ children }) => {
     const { isAuth, loading: authLoading } = useAuth();
     const { user, loading: userLoading } = useUser();
 
-    // Wacht tot de authenticatie- en gebruikersdata is geladen
     if (authLoading || userLoading) {
-        return <div className="loading-fallback-message">Laden...</div>; // Of een spinner
+        return <div className="loading-fallback-message">Laden...</div>;
     }
 
-    // Als de gebruiker geauthenticeerd is, stuur ze naar de juiste startpagina
     if (isAuth) {
-        // Als de gebruiker nog geen rol heeft, stuur naar de rol-selectie pagina
         if (!user || !user.role) {
             return <Navigate to="/onboarding/role" replace />;
         }
 
-        // Bepaal de startpagina op basis van de rol
-        let intendedStartPath = '/'; // Fallback
+        let intendedStartPath = '/';
 
         switch (user.role) {
             case ROLES.ADMIN:
@@ -30,11 +33,9 @@ const PublicRoute = ({ children }) => {
                 intendedStartPath = '/dashboard';
                 break;
             case ROLES.GUARDIAN:
-                // Als de ouder/voogd al een patiënt heeft gekoppeld, stuur naar het portaal.
                 if (user.linkedPatients && user.linkedPatients.length > 0) {
                     intendedStartPath = '/guardian-portal';
                 } else {
-                    // Anders, stuur naar de pagina om een patiënt te koppelen.
                     intendedStartPath = '/onboarding/link-patient';
                 }
                 break;
@@ -47,7 +48,6 @@ const PublicRoute = ({ children }) => {
         return <Navigate to={intendedStartPath} replace />;
     }
 
-    // Als de gebruiker niet geauthenticeerd is, toon de publieke route
     return children;
 };
 

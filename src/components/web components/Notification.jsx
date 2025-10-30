@@ -1,11 +1,18 @@
+/**
+ * Notification.jsx - A dismissible notification component.
+ */
 import React, { useEffect } from 'react';
 import './Notification.css';
 
+/**
+ * @function Notification
+ * @summary Displays a timed, dismissible notification message.
+ */
 const Notification = ({ message, type, onClose }) => {
     useEffect(() => {
         const timer = setTimeout(() => {
             onClose();
-        }, 5000); // Auto-close after 5 seconds
+        }, 5000);
 
         return () => clearTimeout(timer);
     }, [onClose]);

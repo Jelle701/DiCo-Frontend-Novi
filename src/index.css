@@ -112,7 +112,6 @@ body {
 /* ===========================
    3) TYPOGRAFIE
    =========================== */
-/* WHOOP: headlines uppercase + ~10% tracking */
 h1, h2, h3 {
   margin-top: 0;
   margin-bottom: var(--space-4);

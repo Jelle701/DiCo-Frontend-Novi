@@ -1,15 +1,21 @@
+/**
+ * GuardianPatientDetail.jsx - Displays detailed information for a single patient linked to a guardian.
+ */
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { 
-    getLinkedPatients, 
-    getPatientGlucoseMeasurements, 
-    getPatientDiabetesSummary 
+import {
+    getLinkedPatients,
+    getPatientGlucoseMeasurements,
+    getPatientDiabetesSummary
 } from '../../services/ProviderService.jsx';
 import Navbar from '../../components/web components/Navbar.jsx';
 import DiabeticRapportValues from '../../components/DiabeticRapportValues.jsx';
 import './GuardianPatientDetail.css';
 
-// --- Helper Functions ---
+/**
+ * @function calculateAge
+ * @summary Calculates a person's age from their date of birth string.
+ */
 const calculateAge = (dobString) => {
     if (!dobString) return 'N/A';
     const birthDate = new Date(dobString);
@@ -20,14 +26,20 @@ const calculateAge = (dobString) => {
     return age;
 };
 
+/**
+ * @function getGlucoseValueClass
+ * @summary Returns a CSS class based on glucose value for styling.
+ */
 const getGlucoseValueClass = (value) => {
     if (value > 10.0) return 'glucose-value--high';
     if (value < 4.0) return 'glucose-value--low';
     return '';
 };
 
-// --- Child Components ---
-
+/**
+ * @function ProfileSummaryCard
+ * @summary Displays a summary card of the patient's profile information.
+ */
 const ProfileSummaryCard = ({ patient, className }) => (
     <div className={`card bg-800 ${className}`}>
         <h3 className="mt-0 mb-4">Profiel</h3>
@@ -41,6 +53,10 @@ const ProfileSummaryCard = ({ patient, className }) => (
     </div>
 );
 
+/**
+ * @function MeasurementsCard
+ * @summary Displays a table of recent glucose measurements for the patient.
+ */
 const MeasurementsCard = ({ measurements, className }) => {
     const safeMeasurements = Array.isArray(measurements) ? measurements : [];
     return (
@@ -74,9 +90,11 @@ const MeasurementsCard = ({ measurements, className }) => {
     );
 };
 
-// --- Main Component ---
-
-function GuardianPatientDetail() {
+/**
+ * @function GuardianPatientDetail
+ * @summary Main component for displaying a guardian's linked patient details, including summary and measurements.
+ */
+const GuardianPatientDetail = () => {
     const { patientId } = useParams();
     const [patient, setPatient] = useState(null);
     const [measurements, setMeasurements] = useState([]);
@@ -153,6 +171,6 @@ function GuardianPatientDetail() {
             </div>
         </>
     );
-}
+};
 
 export default GuardianPatientDetail;

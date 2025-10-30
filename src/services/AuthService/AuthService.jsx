@@ -1,9 +1,13 @@
+/**
+ * AuthService.jsx - Provides API services for user authentication and registration.
+ */
 import apiClient from '../ApiClient';
 import { handleApiError } from '../ApiErrorHandler';
 
 /**
- * Registreert een nieuwe gebruiker.
- * @param {object} registrationData - De registratiegegevens (email, password).
+ * @function registerUser
+ * @summary Registers a new user with the provided registration data.
+ * @param {object} registrationData - The registration details (email, password).
  * @returns {Promise<{data: object|null, error: object|null}>}
  */
 export async function registerUser(registrationData) {
@@ -16,31 +20,28 @@ export async function registerUser(registrationData) {
 }
 
 /**
- * Logt een gebruiker in.
- * @param {object} loginPayload - De inloggegevens.
+ * @function loginUser
+ * @summary Logs in a user with the provided credentials.
+ * @param {object} loginPayload - The login credentials (email, password).
  * @returns {Promise<{data: object|null, error: object|null}>}
  */
 export async function loginUser(loginPayload) {
-    console.log('AuthService: loginUser aangeroepen met payload:', loginPayload);
     try {
-        // Correctie: Zorg ervoor dat de payload de key 'username' bevat, zoals de backend verwacht.
         const payload = {
-            username: loginPayload.email, // Gebruik de 'email' uit de payload als 'username'
+            username: loginPayload.email,
             password: loginPayload.password,
         };
-        console.log('AuthService: Payload naar backend:', payload);
         const { data } = await apiClient.post('/auth/login', payload);
-        console.log('AuthService: Reactie van backend:', data);
         return { data, error: null };
     } catch (error) {
-        console.error('AuthService: Fout bij inloggen:', error.response || error.message);
         return { data: null, error: handleApiError(error) };
     }
 }
 
 /**
- * Verifieert de e-mail van een gebruiker met een token.
- * @param {object} verificationData - De verificatiegegevens (token).
+ * @function verifyEmail
+ * @summary Verifies a user's email address using a provided token.
+ * @param {object} verificationData - The verification details (token).
  * @returns {Promise<{data: object|null, error: object|null}>}
  */
 export async function verifyEmail(verificationData) {

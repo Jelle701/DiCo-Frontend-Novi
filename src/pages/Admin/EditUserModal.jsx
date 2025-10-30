@@ -1,8 +1,16 @@
+/**
+ * EditUserModal.jsx - Modal for editing user details and managing user data.
+ */
 import React, { useState, useEffect } from 'react';
 import { updateUserById, deleteGlucoseDataForUser } from '../../services/AdminService';
 import ConfirmationModal from '../../components/web components/ConfirmationModal';
 import Notification from '../../components/web components/Notification';
+import './AdminDashboard.css'; // Import the CSS file for styling
 
+/**
+ * @function EditUserModal
+ * @summary Allows administrators to edit user information and delete glucose data.
+ */
 const EditUserModal = ({ user, onClose, onSave }) => {
     const [formData, setFormData] = useState({
         firstName: '',
@@ -44,8 +52,8 @@ const EditUserModal = ({ user, onClose, onSave }) => {
             setError(apiError.message || 'Kon gebruiker niet bijwerken.');
             setLoading(false);
         } else {
-            onSave(data); // Pass the updated user data back
-            onClose(); // Close the modal on success
+            onSave(data);
+            onClose();
         }
     };
 
@@ -64,7 +72,7 @@ const EditUserModal = ({ user, onClose, onSave }) => {
     return (
         <>
             <div className="modal-overlay">
-                <div className="card modal-content" style={{ maxWidth: '600px' }}>
+                <div className="card modal-content edit-user-modal-content">
                     <h2 className="mt-0 mb-6">Gebruiker Bewerken: {user.email}</h2>
                     <form onSubmit={handleSubmit}>
                         <div className="form-group">
@@ -85,7 +93,7 @@ const EditUserModal = ({ user, onClose, onSave }) => {
                             </select>
                         </div>
                         {error && <p className="form-error">{error}</p>}
-                        <div className="d-flex gap-4 mt-6" style={{ justifyContent: 'flex-end' }}>
+                        <div className="d-flex gap-4 mt-6 modal-actions-right">
                             <button type="button" onClick={onClose} disabled={loading} className="btn btn--secondary">Annuleren</button>
                             <button type="submit" disabled={loading} className="btn btn--primary">{loading ? 'Opslaan...' : 'Opslaan'}</button>
                         </div>

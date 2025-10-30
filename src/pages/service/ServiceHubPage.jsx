@@ -1,34 +1,40 @@
-
+/**
+ * ServiceHubPage.jsx - Central hub for managing external service integrations and data access.
+ */
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import Navbar from '../../components/web components/Navbar.jsx';
 import apiClient from '../../services/ApiClient';
 import { getUserServices, refreshLibreViewSession } from '../../services/UserService.jsx';
 import { invalidateLibreViewSession, getLibreViewConnections } from '../../services/LibreView/LibreViewService.jsx';
-import { getAllMyGlucoseData } from '../../services/DataService.jsx'; // Importeer de nieuwe functie
+import { getAllMyGlucoseData } from '../../services/DataService.jsx';
 import GlucoseUpload from '../../components/GlucoseUpload/GlucoseUpload.jsx';
 import './ServicesHubPage.css';
 import '../Authorization/AccessCodeManagementPage.css';
 
-function ServiceHubPage() {
-    // State voor Toegangscode
+/**
+ * @function ServiceHubPage
+ * @summary Provides an interface for users to manage access codes, export data, and integrate with external services like LibreView.
+ */
+const ServiceHubPage = () => {
     const [accessCode, setAccessCode] = useState(null);
     const [loadingCode, setLoadingCode] = useState(true);
     const [errorCode, setErrorCode] = useState('');
     const [copySuccess, setCopySuccess] = useState('');
 
-    // State voor LibreView
     const [libreViewStatus, setLibreViewStatus] = useState('loading');
     const [libreViewInfo, setLibreViewInfo] = useState(null);
     const [libreViewLoading, setLibreViewLoading] = useState(false);
     const [libreViewMessage, setLibreViewMessage] = useState('');
     const location = useLocation();
 
-    // State voor Export
     const [exporting, setExporting] = useState(false);
     const [exportError, setExportError] = useState('');
 
-    // Functies voor Toegangscode
+    /**
+     * @function fetchAccessCode
+     * @summary Fetches the patient's current access code.
+     */
     const fetchAccessCode = async () => {
         setLoadingCode(true);
         try {
@@ -41,6 +47,10 @@ function ServiceHubPage() {
         }
     };
 
+    /**
+     * @function generateAccessCode
+     * @summary Generates a new access code for the patient.
+     */
     const generateAccessCode = async () => {
         setLoadingCode(true);
         try {
@@ -53,6 +63,10 @@ function ServiceHubPage() {
         }
     };
 
+    /**
+     * @function copyToClipboard
+     * @summary Copies the access code to the clipboard.
+     */
     const copyToClipboard = () => {
         if (accessCode) {
             navigator.clipboard.writeText(accessCode).then(() => setCopySuccess('Gekopieerd!'), () => setErrorCode('Kopiëren mislukt.'));
@@ -60,7 +74,10 @@ function ServiceHubPage() {
         }
     };
 
-    // Functie voor Export
+    /**
+     * @function handleExportData
+     * @summary Exports all glucose data to a CSV file.
+     */
     const handleExportData = async () => {
         setExporting(true);
         setExportError('');
@@ -73,7 +90,6 @@ function ServiceHubPage() {
                 return;
             }
 
-            // Genereer CSV content
             const headers = ["timestamp", "value", "unit", "source"];
             const csvRows = [
                 headers.join(','),
@@ -97,7 +113,6 @@ function ServiceHubPage() {
         }
     };
 
-    // Effect om de status van alle services op te halen
     useEffect(() => {
         const checkServiceStatus = async () => {
             setLibreViewStatus('loading');
@@ -131,6 +146,10 @@ function ServiceHubPage() {
         fetchAccessCode();
     }, []);
 
+    /**
+     * @function handleRefreshSession
+     * @summary Refreshes the LibreView session.
+     */
     const handleRefreshSession = async () => {
         setLibreViewLoading(true);
         setLibreViewMessage('Sessie vernieuwen...');
@@ -153,14 +172,12 @@ function ServiceHubPage() {
                 </header>
 
                 <main className="services-grid">
-                    {/* --- Glucose Upload Kaart --- */}
                     <div className="service-card">
                         <h3 className="service-card-title">Handmatige Upload</h3>
                         <p className="service-card-description">Importeer handmatig uw glucosegegevens via een CSV-bestand.</p>
                         <GlucoseUpload />
                     </div>
 
-                    {/* --- Data Export Kaart --- */}
                     <div className="service-card">
                         <h3 className="service-card-title">Data Export</h3>
                         <p className="service-card-description">Exporteer al uw opgeslagen glucosemetingen naar een CSV-bestand.</p>
@@ -170,7 +187,6 @@ function ServiceHubPage() {
                         {exportError && <p className="error-text mt-3">{exportError}</p>}
                     </div>
 
-                    {/* --- Toegangscode Kaart --- */}
                     <div className="service-card access-management-card">
                         <h3 className="service-card-title">Deel Toegang met Zorgverlener</h3>
                         <p className="service-card-description">Genereer een unieke code om uw zorgverlener of voogd alleen-lezen toegang te geven tot uw dashboard.</p>
@@ -195,7 +211,6 @@ function ServiceHubPage() {
                         )}
                     </div>
 
-                    {/* --- LibreView Integratie Kaart --- */}
                     <div className="service-card libreview-card">
                         <h3 className="service-card-title">LibreView Koppeling</h3>
                         <p className="service-card-description">Koppel uw LibreView-account om uw glucosemetingen automatisch te synchroniseren.</p>
@@ -232,7 +247,6 @@ function ServiceHubPage() {
                         )}
                     </div>
 
-                    {/* --- "Binnenkort" Kaarten --- */}
                     <div className="service-card disabled">
                         <h3 className="service-card-title">Google Fit (Binnenkort)</h3>
                         <p className="service-card-description">Synchroniseer uw activiteits- en gezondheidsgegevens.</p>
@@ -254,6 +268,6 @@ function ServiceHubPage() {
             </div>
         </>
     );
-}
+};
 
 export default ServiceHubPage;

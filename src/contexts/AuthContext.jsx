@@ -1,68 +1,56 @@
+/**
+ * AuthContext.jsx - Provides authentication state and user data to the application.
+ */
 import React, { createContext, useState, useEffect, useContext, useMemo, useCallback } from 'react';
 import { getMyProfile } from '../services/ProfileService.jsx';
 
 const AuthContext = createContext(null);
 
+/**
+ * @function AuthContextProvider
+ * @summary Manages authentication token, user profile, and authentication status.
+ */
 export function AuthContextProvider({ children }) {
     const [token, setToken] = useState(() => localStorage.getItem('token'));
     const [user, setUser] = useState(null);
     const [isAuth, setIsAuth] = useState(false);
-    const [loading, setLoading] = useState(true); // Start with loading true
+    const [loading, setLoading] = useState(true);
 
-    // Log state changes for debugging
-    useEffect(() => {
-        console.log('AuthContextProvider: user changed to', user);
-    }, [user]);
-
-    useEffect(() => {
-        console.log('AuthContextProvider: loading changed to', loading);
-    }, [loading]);
-
-    useEffect(() => {
-        console.log('AuthContextProvider: isAuth changed to', isAuth);
-    }, [isAuth]);
-
-    // Stable logout function
+    /**
+     * @function logout
+     * @summary Clears authentication data and resets state.
+     */
     const logout = useCallback(() => {
-        console.log('AuthContextProvider: Performing logout.');
         localStorage.removeItem('token');
         sessionStorage.removeItem('delegatedToken');
         sessionStorage.removeItem('patientUsername');
         setToken(null);
         setUser(null);
         setIsAuth(false);
-        setLoading(false); // Ensure loading is false after logout
+        setLoading(false);
     }, []);
 
-    // Main effect for handling authentication logic
     useEffect(() => {
-        let isMounted = true; // Flag to prevent state updates on unmounted component
-        console.log('AuthContextProvider: Auth effect is running. Token:', token);
+        let isMounted = true;
 
         const initializeAuth = async () => {
             if (token) {
                 if (isMounted) setLoading(true);
                 try {
-                    console.log('AuthContextProvider: Calling getMyProfile...');
                     const { data, error } = await getMyProfile();
-                    console.log('AuthContextProvider: getMyProfile response:', { data, error });
 
                     if (!isMounted) {
-                        console.log('AuthContextProvider: Component unmounted after getMyProfile, aborting state update.');
-                        return; // Abort if component is unmounted
+                        return;
                     }
 
                     if (error) {
-                        console.log('AuthContextProvider: getMyProfile error, logging out.', error);
                         logout();
                     } else {
-                        console.log('AuthContextProvider: getMyProfile success, setting user to:', data);
                         setUser(data);
                         setIsAuth(true);
                     }
                 } catch (err) {
                     if (isMounted) {
-                        console.error("AuthContextProvider: Error fetching profile during initialization:", err);
                         logout();
                     }
                 } finally {
@@ -71,8 +59,6 @@ export function AuthContextProvider({ children }) {
                     }
                 }
             } else {
-                // No token, so we are not authenticated.
-                console.log('AuthContextProvider: No token found, setting unauthenticated state.');
                 setUser(null);
                 setIsAuth(false);
                 setLoading(false);
@@ -81,21 +67,25 @@ export function AuthContextProvider({ children }) {
 
         initializeAuth();
 
-        // Cleanup function
         return () => {
-            console.log('AuthContextProvider: Auth effect cleanup.');
             isMounted = false;
         };
-    }, [token, logout]); // Only depends on token and the stable logout function
+    }, [token, logout]);
 
+    /**
+     * @function login
+     * @summary Sets the authentication token and triggers re-authentication.
+     */
     const login = useCallback((jwt) => {
-        console.log('AuthContextProvider: Login called, setting token.');
         localStorage.setItem('token', jwt);
         setToken(jwt);
     }, []);
 
+    /**
+     * @function setUserData
+     * @summary Updates the user profile data and sets authentication status.
+     */
     const setUserData = useCallback((profile) => {
-        console.log('AuthContextProvider: setUserData called, setting user to:', profile);
         setUser(profile);
         setIsAuth(true);
         setLoading(false);
@@ -118,7 +108,10 @@ export function AuthContextProvider({ children }) {
     );
 }
 
-// Keep original hooks to avoid breaking other parts of the app
+/**
+ * @function useAuth
+ * @summary Hook to access authentication status, login, and logout functions.
+ */
 export const useAuth = () => {
     const context = useContext(AuthContext);
     if (!context) {
@@ -132,6 +125,10 @@ export const useAuth = () => {
     };
 };
 
+/**
+ * @function useUser
+ * @summary Hook to access user profile data and update it.
+ */
 export const useUser = () => {
     const context = useContext(AuthContext);
     if (!context) {

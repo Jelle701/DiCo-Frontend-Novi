@@ -1,477 +1,6 @@
-//
-// import React, { useState, useEffect, useCallback } from 'react';
-// import { Link } from 'react-router-dom';
-// import { useUser } from '../../contexts/AuthContext.jsx';
-// import { getRecentGlucoseMeasurements, addGlucoseMeasurement } from '../../services/GlucoseService.jsx';
-// import { getDiabetesSummary } from '../../services/DiabetesService.jsx';
-// import { MeasurementSource } from '../../constants.js'; // Importeer de nieuwe constante
-// import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ReferenceArea } from 'recharts';
-// import './DashboardPage.css';
-// import Navbar from "../../components/web components/Navbar.jsx";
-// import DiabeticRapportValues from "../../components/DiabeticRapportValues.jsx";
-// import "../../components/DiabeticRapportValues.css";
-//
-// // Definieer de constanten voor milliseconden
-// const MS = {
-//     MINUTE: 60 * 1000,
-//     HOUR: 60 * 60 * 1000,
-//     DAY: 24 * 60 * 60 * 1000,
-// };
-//
-// // Definieer de constanten voor glucosebereiken (mmol/L)
-// const RANGE_LOW_MAX = 3.9; // Bovenste grens voor 'te laag'
-// const RANGE_HIGH_MIN = 10.0; // Onderste grens voor 'te hoog'
-// const RANGE_TOP = 20.0; // Maximale waarde voor de grafiek (of een geschikte dynamische waarde)
-//
-// // ---- Tijdzone-constanten en formatters ----
-// const TIMEZONE = 'Europe/Amsterdam';
-//
-// const fmtTimeHM = new Intl.DateTimeFormat('nl-NL', {
-//   hour: '2-digit',
-//   minute: '2-digit',
-//   timeZone: TIMEZONE,
-// });
-//
-// const fmtDayShort = new Intl.DateTimeFormat('nl-NL', {
-//   day: 'numeric',
-//   month: 'short',
-//   timeZone: TIMEZONE,
-// });
-//
-// const fmtDayNum = new Intl.DateTimeFormat('nl-NL', {
-//   day: 'numeric',
-//   month: 'numeric',
-//   timeZone: TIMEZONE,
-// });
-//
-// const fmtLongDay = new Intl.DateTimeFormat('nl-NL', {
-//   day: 'numeric',
-//   month: 'long',
-//   timeZone: TIMEZONE,
-// });
-//
-// const fmtDateTimeTable = new Intl.DateTimeFormat('nl-NL', {
-//   day: '2-digit',
-//   month: '2-digit',
-//   year: 'numeric',
-//   hour: '2-digit',
-//   minute: '2-digit',
-//   timeZone: TIMEZONE,
-// });
-//
-// const getInitialDateTime = () => {
-//   // Betrouwbare “lokale ISO” (onafhankelijk van locale formatting)
-//   const now = new Date();
-//   const tzOffsetMs = now.getTimezoneOffset() * 60 * 1000;
-//   const localISO = new Date(now.getTime() - tzOffsetMs).toISOString(); // YYYY-MM-DDTHH:mm:ss.sssZ
-//   return {
-//     date: localISO.slice(0, 10),   // YYYY-MM-DD
-//     time: localISO.slice(11, 16),  // HH:mm
-//   };
-// };
-//
-// // Normaliseer elke timestamp naar epoch-ms.
-// // - epoch in seconden -> *1000
-// // - ISO zonder tijdzone (zonder Z en zonder +/-hh:mm) -> behandel als UTC door 'Z' toe te voegen
-// const parseTimestampMs = (ts) => {
-//   if (ts == null) return NaN;
-//
-//   // Numeriek?
-//   const n = Number(ts);
-//   if (Number.isFinite(n)) {
-//     return n < 1e12 ? n * 1000 : n; // seconds -> ms
-//   }
-//
-//   // String?
-//   if (typeof ts === 'string') {
-//     // ISO string zonder timezone? (YYYY-MM-DDTHH:mm[:ss[.sss]])
-//     const looksIsoNoTz = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2}(\.\d{3})?)?$/.test(ts)
-//                        && !/[zZ]$/.test(ts)
-//                        && !/[+\-]\d{2}:\d{2}$/.test(ts);
-//     if (looksIsoNoTz) {
-//       return Date.parse(ts + 'Z'); // behandel als UTC
-//     }
-//     return Date.parse(ts); // normale parse (incl. Z of offset)
-//   }
-//
-//   return NaN;
-// };
-//
-// const getStartDate = (range) => {
-//   const d = new Date();
-//   switch (range) {
-//     case '7d':   d.setDate(d.getDate() - 7); break;
-//     case '30d':  d.setMonth(d.getMonth() - 1); break;
-//     case '180d': d.setMonth(d.getMonth() - 6); break;
-//     case '24h':  d.setHours(d.getHours() - 24); break;
-//     case '6h':
-//     default:     d.setHours(d.getHours() - 6); break;
-//   }
-//   return d;
-// };
-//
-// const getChartTitle = (range) => {
-//     const titles = {
-//         '6h': 'Glucoseverloop (laatste 6 uur)',
-//         '24h': 'Glucoseverloop (laatste 24 uur)',
-//         '7d': 'Glucoseverloop (laatste 7 dagen)',
-//         '30d': 'Glucoseverloop (laatste 30 dagen)',
-//         '180d': 'Glucoseverloop (laatste 6 maanden)',
-//     };
-//     return titles[range] || 'Glucoseverloop';
-// };
-//
-// const timeTickFormatter = (timestamp, range) => {
-//   const d = new Date(timestamp); // timestamp in ms UTC epoch
-//   switch (range) {
-//     case '6h':
-//     case '24h':
-//       return fmtTimeHM.format(d);
-//     case '7d':
-//       return fmtDayShort.format(d);
-//     case '30d':
-//     case '180d':
-//       return fmtDayNum.format(d);
-//     default:
-//       return fmtDayShort.format(d);
-//   }
-// };
-//
-// const CustomTooltip = ({ active, payload }) => {
-//   if (!active || !payload?.length) return null;
-//   const p0 = payload[0];
-//   const ts = p0?.payload?.timestamp;
-//   if (ts == null) return null;
-//
-//   const d = new Date(ts);
-//   const value = Number(p0.value);
-//
-//   return (
-//     <div className="custom-tooltip" style={{
-//       backgroundColor: 'var(--gray-800)',
-//       border: '1px solid var(--gray-600)',
-//       padding: 'var(--space-3)',
-//       borderRadius: 'var(--radius-md)',
-//       boxShadow: 'var(--shadow-2)'
-//     }}>
-//       <p style={{ margin: 0, color: 'var(--color-white)', fontWeight: 'bold', fontSize: 16 }}>
-//         {Number.isFinite(value) ? `${value.toFixed(1)} mmol/L` : '—'}
-//       </p>
-//       <p style={{ margin: '4px 0 0', color: 'var(--gray-300)', fontSize: 12 }}>
-//         {fmtLongDay.format(d)}, {fmtTimeHM.format(d)}
-//       </p>
-//     </div>
-//   );
-// };
-//
-// function DashboardPage() {
-//     const { user, loading: userLoading } = useUser();
-//
-//     const [glucoseData, setGlucoseData] = useState([]);
-//     const [rawMeasurements, setRawMeasurements] = useState([]);
-//     const [loading, setLoading] = useState(true);
-//     const [error, setError] = useState('');
-//     const [timeRange, setTimeRange] = useState('6h');
-//
-//     const [summaryData, setSummaryData] = useState(null);
-//     const [summaryLoading, setSummaryLoading] = useState(true);
-//     const [summaryError, setSummaryError] = useState('');
-//
-//     const isDelegatedView = !!sessionStorage.getItem('delegatedToken');
-//     const patientUsername = sessionStorage.getItem('patientUsername');
-//
-//     const [formState, setFormState] = useState({ value: '', ...getInitialDateTime() });
-//     const [formError, setFormError] = useState('');
-//     const [formSuccess, setFormSuccess] = useState('');
-//
-//     const fetchAllData = async () => {
-//         setLoading(true);
-//         setError('');
-//         try {
-//             const { data } = await getRecentGlucoseMeasurements();
-//             // console.log('[DashboardPage] Ruwe metingen van backend (eerste 5):', data.slice(0, 5)); // Log de ruwe data
-//             setRawMeasurements(data || []);
-//         } catch (fetchError) {
-//             setError(fetchError.message || 'Kon metingen niet ophalen.');
-//             setRawMeasurements([]);
-//         } finally {
-//             setLoading(false);
-//         }
-//
-//         setSummaryLoading(true);
-//         setSummaryError('');
-//         try {
-//             const { data, error: summaryApiError } = await getDiabetesSummary(); // Destructure data en error
-//             if (summaryApiError) {
-//                 setSummaryError(summaryApiError.message || 'Kon samenvatting niet ophalen.');
-//                 setSummaryData(null);
-//             } else {
-//                 setSummaryData(data); // Sla alleen de daadwerkelijke data op
-//             }
-//         } catch (fetchError) {
-//             setSummaryError(fetchError.message || 'Kon samenvatting niet ophalen.');
-//             setSummaryData(null);
-//         } finally {
-//             setSummaryLoading(false);
-//         }
-//     };
-//
-//     useEffect(() => {
-//         if (isDelegatedView || user) {
-//             fetchAllData();
-//             if (!isDelegatedView) {
-//                 const intervalId = setInterval(fetchAllData, 60000);
-//                 return () => clearInterval(intervalId);
-//             }
-//         }
-//     }, [user, isDelegatedView]);
-//
-//     useEffect(() => {
-//         if (rawMeasurements.length === 0) {
-//             setGlucoseData([]);
-//             return;
-//         }
-//
-//         const startDate = getStartDate(timeRange).getTime();
-//
-//         // Eerst normaliseren → dan filteren → dan sorteren
-//         const chartData = rawMeasurements
-//             .map(m => {
-//                 const ts = parseTimestampMs(m.timestamp);
-//                 return { value: Number(m.value), timestamp: ts, _raw: m };
-//             })
-//             .filter(p => Number.isFinite(p.timestamp) && p.timestamp >= startDate)
-//             .sort((a, b) => a.timestamp - b.timestamp);
-//
-//         setGlucoseData(chartData);
-//     }, [rawMeasurements, timeRange]);
-//
-//     const handleFormChange = (e) => {
-//         const { name, value } = e.target;
-//         setFormState(prev => ({ ...prev, [name]: value }));
-//     };
-//
-//     const handleFormSubmit = async (e) => {
-//         e.preventDefault();
-//         setFormError('');
-//         setFormSuccess('');
-//
-//         if (!formState.value || formState.value <= 0) {
-//             setFormError('Glucosewaarde moet een positief getal zijn.');
-//             return;
-//         }
-//
-//         const timestamp = new Date(`${formState.date}T${formState.time}:00`).toISOString();
-//         const payload = {
-//             value: parseFloat(formState.value),
-//             timestamp,
-//             source: MeasurementSource.MANUAL_ENTRY // Voeg de bron toe
-//         };
-//
-//         try {
-//             await addGlucoseMeasurement(payload);
-//             setFormSuccess('Meting succesvol opgeslagen!');
-//             fetchAllData();
-//             setFormState({ value: '', ...getInitialDateTime() });
-//             setTimeout(() => setFormSuccess(''), 3000);
-//         } catch (addError) {
-//             setFormError(addError.message || 'Kon meting niet opslaan.');
-//         }
-//     };
-//
-//     const formatDate = (isoString) => fmtDateTimeTable.format(new Date(isoString));
-//
-//     if (userLoading) {
-//         return (
-//             <>
-//                 <Navbar />
-//                 <div className="dashboard-page"><h1>Authenticatie controleren...</h1></div>
-//             </>
-//         );
-//     }
-//
-//     const timeRangeOptions = [
-//         { key: '6h', label: '6U' },
-//         { key: '24h', label: '24U' },
-//         { key: '7d', label: '7D' },
-//         { key: '30d', label: '1M' },
-//         { key: '180d', label: '6M' },
-//     ];
-//
-//     // Bereken de start- en eindtijd voor de X-as domain
-//     const chartDomainStart = getStartDate(timeRange).getTime();
-//     const chartDomainEnd = new Date().getTime();
-//
-//     // Bepaal de tickCount op basis van de timeRange voor betere leesbaarheid
-//     const getTickCount = useCallback((range) => {
-//         switch (range) {
-//             case '6h': return 4; // Bijv. elke 2 uur
-//             case '24h': return 6; // Bijv. elke 4 uur
-//             case '7d': return 7; // Elke dag
-//             case '30d': return 5; // Ongeveer elke week
-//             case '180d': return 6; // Elke maand
-//             default: return 5;
-//         }
-//     }, []);
-//
-//     const currentTickCount = getTickCount(timeRange);
-//
-//     return (
-//         <>
-//             <Navbar />
-//             <div className="dashboard-page">
-//                 <header className="dashboard-header">
-//                     <h1>{isDelegatedView ? `Dashboard van ${patientUsername}` : `Welkom terug, ${user?.firstName || 'gebruiker'}!`}</h1>
-//                     <p>{isDelegatedView ? 'U bekijkt deze gegevens als zorgverlener of ouder/voogd.' : 'Hier is een overzicht van je recente activiteit en gegevens.'}</p>
-//                 </header>
-//
-//                 <main className="dashboard-layout">
-//                     <div className="chart-container">
-//                         <div className="d-flex justify-between items-center mb-4">
-//                             <h2 className="mt-0 mb-0">{getChartTitle(timeRange)}</h2>
-//                             <div className="time-range-selector">
-//                                 {timeRangeOptions.map(option => (
-//                                     <button
-//                                         key={option.key}
-//                                         onClick={() => setTimeRange(option.key)}
-//                                         className={timeRange === option.key ? 'active' : ''}
-//                                     >
-//                                         {option.label}
-//                                     </button>
-//                                 ))}
-//                             </div>
-//                         </div>
-//
-//                         {error && <p className="error-message">{error}</p>}
-//                         {loading ? (
-//                             <p>Metingen laden...</p>
-//                         ) : (
-//                             glucoseData.length > 0 ? (
-//                                 <ResponsiveContainer width="100%" height={400}>
-//                                     <LineChart
-//                                         data={glucoseData}
-//                                         margin={{ top: 5, right: 20, left: 20, bottom: 5 }}
-//                                     >
-//                                         <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
-//
-//                                         <XAxis
-//                                             type="number"
-//                                             dataKey="timestamp"
-//                                             domain={[chartDomainStart, chartDomainEnd]}     // dynamisch tijdsdomein
-//                                             tickFormatter={(ts) => timeTickFormatter(ts, timeRange)}
-//                                             tickCount={currentTickCount}             // dynamisch aantal ticks
-//                                             interval="preserveStartEnd"
-//                                             scale="time"
-//                                         />
-//
-//                                         {/* Laat y-as decimals toe (glucose heeft decimalen) */}
-//                                         <YAxis domain={['dataMin - 1', 'dataMax + 1']} />
-//
-//                                         <Tooltip content={<CustomTooltip />} isAnimationActive={false} animationDuration={0} />
-//                                         <Legend />
-//
-//                                         {/* Referentiegebieden voor TIR */}
-//                                         <ReferenceArea
-//                                             y1={0}
-//                                             y2={RANGE_LOW_MAX}
-//                                             fill="rgba(255, 0, 38, 0.2)"
-//                                             strokeOpacity={0}
-//                                             ifOverflow="hidden"
-//                                         />
-//                                         <ReferenceArea
-//                                             y1={RANGE_HIGH_MIN}
-//                                             y2={RANGE_TOP}
-//                                             fill="rgba(255, 222, 0, 0.2)"
-//                                             strokeOpacity={0}
-//                                             ifOverflow="hidden"
-//                                         />
-//
-//                                         <Line
-//                                             type="monotone"
-//                                             dataKey="value"
-//                                             name="Glucose"
-//                                             stroke="var(--color-teal)"
-//                                             strokeWidth={2}
-//                                             activeDot={{ r: 8, stroke: 'var(--color-teal)', fill: 'var(--color-white)' }}
-//                                             dot={false}
-//                                             isAnimationActive={false}
-//                                             animationDuration={0}
-//                                         />
-//                                     </LineChart>
-//                                 </ResponsiveContainer>
-//                             ) : (
-//                                 <div className="no-data-placeholder">
-//                                     <p>Geen metingen in de geselecteerde periode.</p>
-//                                 </div>
-//                             )
-//                         )}
-//
-//                         {!isDelegatedView && (
-//                             <div className="quick-add-form">
-//                                 <h3>Snelle Invoer</h3>
-//                                 <form onSubmit={handleFormSubmit}>
-//                                     <div className="form-row">
-//                                         <div className="input-group"><label htmlFor="value">Nieuwe Waarde (mmol/L)</label><input type="number" id="value" name="value" value={formState.value} onChange={handleFormChange} step="0.1" required placeholder="bv. 6.5"/></div>
-//                                         <div className="input-group"><label htmlFor="date">Datum</label><input type="date" id="date" name="date" value={formState.date} onChange={handleFormChange} required/></div>
-//                                         <div className="input-group"><label htmlFor="time">Tijd</label><input type="time" id="time" name="time" value={formState.time} onChange={handleFormChange} required/></div>
-//                                     </div>
-//                                     {formError && <p className="form-error">{formError}</p>}
-//                                     {formSuccess && <p className="form-success">{formSuccess}</p>}
-//                                     <div className="d-flex justify-between items-center mt-4">
-//                                         <button type="submit" className="btn btn--primary">Nu Opslaan</button>
-//                                         <Link to="/service-hub" className="btn btn--outline">Gegevens Importeren</Link>
-//                                     </div>
-//                                 </form>
-//                             </div>
-//                         )}
-//
-//                         <div className="measurements-table-container">
-//                             <h3>Alle Recente Metingen</h3>
-//                             {rawMeasurements.length > 0 ? (
-//                                 <div className="table-wrapper">
-//                                     <table>
-//                                         <thead><tr><th>Waarde (mmol/L)</th><th>Tijdstip</th></tr></thead>
-//                                         <tbody>{rawMeasurements.map((m) => (<tr key={m.id}><td>{m.value.toFixed(1)}</td><td>{fmtDateTimeTable.format(new Date(m.timestamp))}</td></tr>))}</tbody>
-//                                     </table>
-//                                 </div>
-//                             ) : !loading && (<p>Geen metingen om weer te geven.</p>)}
-//                         </div>
-//                     </div>
-//
-//                     <div className="summary-container">
-//                         {summaryLoading ? (
-//                             <p>Samenvatting laden...</p>
-//                         ) : summaryError ? (
-//                             <p className="error-error">{summaryError}</p>
-//                         ) : summaryData ? (
-//                             <>
-//                                 <DiabeticRapportValues data={summaryData} title="Uw Diabetes Samenvatting" />
-//                                 <div className="summary-explanation">
-//                                     <h4>Uitleg van de Waardes</h4>
-//                                     <ul>
-//                                         <li><strong>HbA1c:</strong> Een laboratoriummeting die de gemiddelde bloedglucose over de afgelopen 2-3 maanden weergeeft.</li>
-//                                         <li><strong>GMI (Glucose Management Indicator):</strong> Een schatting van uw HbA1c, berekend op basis van uw gemiddelde glucose van de laatste 90 dagen. Dit geeft een recenter beeld dan een lab-meting.</li>
-//                                         <li><strong>Gemiddelde Glucose:</strong> De gemiddelde glucosewaarde over verschillende periodes (7, 14, 30, 90 dagen).</li>
-//                                         <li><strong>Time in Range (TIR):</strong> Het percentage van de tijd dat uw glucosewaarden binnen het doelbereik (meestal 3.9-10.0 mmol/L) lagen. Een hoger percentage is beter.</li>
-//                                         <li><strong>Variabiliteit (CV):</strong> De mate van schommeling in uw glucosewaarden. Een lagere CV (≤ 36%) duidt op stabielere glucosewaarden.</li>
-//                                         <li><strong>Nuchter (FPG):</strong> Uw gemiddelde glucosewaarde wanneer u nuchter bent (bv. 's ochtends voor het ontbijt).</li>
-//                                         <li><strong>Na maaltijd (PPG):</strong> Uw gemiddelde glucosewaarde na het eten. Dit helpt om de impact van maaltijden te zien.</li>
-//                                     </ul>
-//                                 </div>
-//                             </>
-//                         ) : (
-//                             <p>Geen samenvattingsgegevens beschikbaar.</p>
-//                         )}
-//                     </div>
-//                 </main>
-//             </div>
-//         </>
-//     );
-// }
-//
-// export default DashboardPage;
-
-
+/**
+ * DashboardPage.jsx - Displays a comprehensive dashboard for patients, including glucose charts, manual input, and diabetes summary.
+ */
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { useUser } from '../../contexts/AuthContext.jsx';
@@ -484,23 +13,16 @@ import Navbar from "../../components/web components/Navbar.jsx";
 import DiabeticRapportValues from "../../components/DiabeticRapportValues.jsx";
 import "../../components/DiabeticRapportValues.css";
 
-// ================================
-// Tijds- en glucose-constanten
-// ================================
 const MS = {
     MINUTE: 60 * 1000,
     HOUR: 60 * 60 * 1000,
     DAY: 24 * 60 * 60 * 1000,
 };
 
-// mmol/L referentiegebieden
 const RANGE_LOW_MAX = 3.9;
 const RANGE_HIGH_MIN = 10.0;
 const RANGE_TOP = 20.0;
 
-// ================================
-// Tijdzone-formatters (Amsterdam)
-// ================================
 const TIMEZONE = 'Europe/Amsterdam';
 
 const fmtTimeHM = new Intl.DateTimeFormat('nl-NL', {
@@ -532,30 +54,22 @@ const fmtDateTimeTable = new Intl.DateTimeFormat('nl-NL', {
     timeZone: TIMEZONE,
 });
 
-// ==========================================
-// Betrouwbare lokale datum/tijd (form velden)
-// ==========================================
 const getInitialDateTime = () => {
     const now = new Date();
     const tzOffsetMs = now.getTimezoneOffset() * 60 * 1000;
-    const localISO = new Date(now.getTime() - tzOffsetMs).toISOString(); // YYYY-MM-DDTHH:mm:ss.sssZ
+    const localISO = new Date(now.getTime() - tzOffsetMs).toISOString();
     return {
-        date: localISO.slice(0, 10),   // YYYY-MM-DD
-        time: localISO.slice(11, 16),  // HH:mm
+        date: localISO.slice(0, 10),
+        time: localISO.slice(11, 16),
     };
 };
 
-// ==========================================
-// Timestamp normalisatie helper
-// ==========================================
-// - Epoch in seconden -> *1000
-// - ISO zonder tijdzone -> behandel als UTC door 'Z' toe te voegen
 const parseTimestampMs = (ts) => {
     if (ts == null) return NaN;
 
     const n = Number(ts);
     if (Number.isFinite(n)) {
-        return n < 1e12 ? n * 1000 : n; // seconds -> ms
+        return n < 1e12 ? n * 1000 : n;
     }
 
     if (typeof ts === 'string') {
@@ -569,16 +83,13 @@ const parseTimestampMs = (ts) => {
     return NaN;
 };
 
-// ==========================================
-// DST-vriendelijke startdatum per range
-// ==========================================
 const getStartDate = (range) => {
     const d = new Date();
     switch (range) {
-        case '7d':   d.setDate(d.getDate() - 7); break;       // kalender-dagen
-        case '30d':  d.setMonth(d.getMonth() - 1); break;     // kalender-maanden
+        case '7d':   d.setDate(d.getDate() - 7); break;
+        case '30d':  d.setMonth(d.getMonth() - 1); break;
         case '180d': d.setMonth(d.getMonth() - 6); break;
-        case '24h':  d.setHours(d.getHours() - 24); break;    // exacte uren terug
+        case '24h':  d.setHours(d.getHours() - 24); break;
         case '6h':
         default:     d.setHours(d.getHours() - 6); break;
     }
@@ -596,7 +107,6 @@ const getChartTitle = (range) => {
     return titles[range] || 'Glucoseverloop';
 };
 
-// X-as labels per range
 const timeTickFormatter = (timestamp, range) => {
     const d = new Date(timestamp);
     switch (range) {
@@ -609,7 +119,6 @@ const timeTickFormatter = (timestamp, range) => {
     }
 };
 
-// Tooltip
 const CustomTooltip = ({ active, payload }) => {
     if (!active || !payload?.length) return null;
     const p0 = payload[0];
@@ -620,28 +129,17 @@ const CustomTooltip = ({ active, payload }) => {
     const value = Number(p0.value);
 
     return (
-        <div
-            className="custom-tooltip"
-            style={{
-                backgroundColor: 'var(--gray-800)',
-                border: '1px solid var(--gray-600)',
-                padding: 'var(--space-3)',
-                borderRadius: 'var(--radius-md)',
-                boxShadow: 'var(--shadow-2)',
-            }}>
-            <p style={{ margin: 0, color: 'var(--color-white)', fontWeight: 'bold', fontSize: 16 }}>
+        <div className="custom-tooltip">
+            <p className="custom-tooltip-value">
                 {Number.isFinite(value) ? `${value.toFixed(1)} mmol/L` : '—'}
             </p>
-            <p style={{ margin: '4px 0 0', color: 'var(--gray-300)', fontSize: 12 }}>
+            <p className="custom-tooltip-date">
                 {fmtLongDay.format(d)}, {fmtTimeHM.format(d)}
             </p>
         </div>
     );
 };
 
-// ==========================================
-// Expliciete ticks voor de X-as (voorkomt overload)
-// ==========================================
 const makeTicks = (startMs, endMs, range) => {
     const ticks = [];
     const H = 60 * 60 * 1000;
@@ -651,28 +149,25 @@ const makeTicks = (startMs, endMs, range) => {
 
     let step;
     switch (range) {
-        case '6h':   step = 2 * H; break;     // elke 2 uur
-        case '24h':  step = 4 * H; break;     // elke 4 uur
-        case '7d':   step = D; break;         // elke dag
-        case '30d':  step = 7 * D; break;     // ~wekelijks
-        case '180d': step = 30 * D; break;    // ~maandelijks
+        case '6h':   step = 2 * H; break;
+        case '24h':  step = 4 * H; break;
+        case '7d':   step = D; break;
+        case '30d':  step = 7 * D; break;
+        case '180d': step = 30 * D; break;
         default:     step = 2 * H; break;
     }
 
-    // Start altijd op endMs (nu) en loop terug in stappen
     const arr = [endMs];
     for (let t = endMs - step; t >= startMs; t -= step) {
         arr.push(t);
     }
 
-    // Zorg dat de linkergrens er desnoods nog bijkomt
     if (arr[arr.length - 1] > startMs) arr.push(startMs);
 
     return pushAsc(arr);
 };
 
-
-function DashboardPage() {
+const DashboardPage = () => {
     const { user, loading: userLoading } = useUser();
 
     const [glucoseData, setGlucoseData] = useState([]);
@@ -739,7 +234,7 @@ function DashboardPage() {
             return;
         }
         const startMs = getStartDate(timeRange).getTime();
-        const endMs = Date.now(); // nu
+        const endMs = Date.now();
 
         const chartData = rawMeasurements
             .map(m => {
@@ -768,7 +263,6 @@ function DashboardPage() {
             return;
         }
 
-        // Lokaal → ISO (UTC)
         const timestamp = new Date(`${formState.date}T${formState.time}:00`).toISOString();
         const payload = {
             value: parseFloat(formState.value),
@@ -796,7 +290,7 @@ function DashboardPage() {
         return (
             <>
                 <Navbar />
-                <div className="dashboard-page"><h1>Authenticatie controleren...</h1></div>
+                <div className="dashboard-page"><h1 className="loading-message">Authenticatie controleren...</h1></div>
             </>
         );
     }
@@ -810,7 +304,7 @@ function DashboardPage() {
     ];
 
     const chartDomainStart = getStartDate(timeRange).getTime();
-    const chartDomainEnd = Date.now(); // hard einde = nu
+    const chartDomainEnd = Date.now();
     const xTicks = makeTicks(chartDomainStart, chartDomainEnd, timeRange);
 
 
@@ -856,7 +350,7 @@ function DashboardPage() {
                         {error && <p className="error-message">{error}</p>}
 
                         {loading ? (
-                            <p>Metingen laden...</p>
+                            <p className="loading-message">Metingen laden...</p>
                         ) : (
                             glucoseData.length > 0 ? (
                                 <ResponsiveContainer width="100%" height={400}>
@@ -869,8 +363,8 @@ function DashboardPage() {
                                         <XAxis
                                             type="number"
                                             dataKey="timestamp"
-                                            domain={[chartDomainStart, chartDomainEnd]}  // eindigt op nu
-                                            ticks={xTicks}                               // expliciete ticks (laatste = nu)
+                                            domain={[chartDomainStart, chartDomainEnd]}
+                                            ticks={xTicks}
                                             tickFormatter={(ts) => timeTickFormatter(ts, timeRange)}
                                             interval="preserveStartEnd"
                                             scale="time"
@@ -997,7 +491,7 @@ function DashboardPage() {
 
                     <div className="summary-container">
                         {summaryLoading ? (
-                            <p>Samenvatting laden...</p>
+                            <p className="loading-message">Samenvatting laden...</p>
                         ) : summaryError ? (
                             <p className="error-message">{summaryError}</p>
                         ) : summaryData ? (
@@ -1024,7 +518,6 @@ function DashboardPage() {
             </div>
         </>
     );
-}
+};
 
 export default DashboardPage;
-

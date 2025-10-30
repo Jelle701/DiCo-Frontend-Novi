@@ -1,10 +1,16 @@
+/**
+ * ProviderDashboard.jsx - Displays an overview of linked patients for healthcare providers.
+ */
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { getLinkedPatients, getProviderDashboardSummary } from '../../services/ProviderService';
 import Navbar from '../../components/web components/Navbar.jsx';
 import './ProviderDashboard.css';
 
-// --- Helper Functions ---
+/**
+ * @function calculateAge
+ * @summary Calculates a person's age from their date of birth string.
+ */
 const calculateAge = (dobString) => {
     if (!dobString) return 'N/A';
     const birthDate = new Date(dobString);
@@ -15,6 +21,10 @@ const calculateAge = (dobString) => {
     return age;
 };
 
+/**
+ * @function timeSince
+ * @summary Returns a human-readable string indicating time elapsed since a given date.
+ */
 const timeSince = (dateString) => {
     if (!dateString) return 'Nooit';
     const seconds = Math.floor((new Date() - new Date(dateString)) / 1000);
@@ -31,8 +41,10 @@ const timeSince = (dateString) => {
     return "Zojuist";
 };
 
-// --- Child Components ---
-
+/**
+ * @function TimeInRangeBar
+ * @summary Displays a colored bar representing a percentage, typically for Time in Range.
+ */
 const TimeInRangeBar = ({ percentage }) => {
     const perc = isNaN(percentage) ? 0 : Math.max(0, Math.min(100, percentage));
     let barColorClass = 'range-bar--ok';
@@ -49,11 +61,14 @@ const TimeInRangeBar = ({ percentage }) => {
     );
 };
 
+/**
+ * @function PatientSummaryCard
+ * @summary Displays a summary card for a single patient with key metrics and navigation.
+ */
 const PatientSummaryCard = ({ patient }) => {
     const navigate = useNavigate();
     
     const handleCardClick = () => {
-        // Navigate to the patient portal and potentially pass state to select this patient
         navigate('/patient-portal', { state: { selectedPatientId: patient.patientId } });
     };
 
@@ -81,13 +96,15 @@ const PatientSummaryCard = ({ patient }) => {
     );
 };
 
-// --- Main Component ---
-
-function ProviderDashboard() {
+/**
+ * @function ProviderDashboard
+ * @summary Main component for the Provider Dashboard, fetching and displaying summaries of linked patients.
+ */
+const ProviderDashboard = () => {
     const [patientsSummary, setPatientsSummary] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
-    const [sortOrder, setSortOrder] = useState('alerts'); // 'alerts', 'name', 'sync'
+    const [sortOrder, setSortOrder] = useState('alerts');
 
     const fetchDashboardData = useCallback(async () => {
         setLoading(true);

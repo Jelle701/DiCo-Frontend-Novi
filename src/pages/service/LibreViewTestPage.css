@@ -23,3 +23,7 @@
     word-break: break-all;
     color: var(--gray-100);
 }
+
+.libreview-test-card {
+    max-width: 900px;
+}
